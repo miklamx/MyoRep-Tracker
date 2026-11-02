@@ -16,7 +16,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect } = React;
 
     const PRESET_EXERCISES = [
       {
@@ -25,8 +25,7 @@
         category: 'Legs',
         equipment: 'Total Gym',
         description: 'Drive through mid-foot/heel. Keep knee tracking over second toe.',
-        defaultLevel: 5,
-        targetRIR: 2
+        defaultLevel: 5
       },
       {
         id: 'band-deadlift',
@@ -34,8 +33,7 @@
         category: 'Legs',
         equipment: 'Resistance Bands',
         description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward at top.',
-        defaultLevel: 'Heavy Loop',
-        targetRIR: 2
+        defaultLevel: 'Heavy Loop'
       },
       {
         id: 'tg-crossover',
@@ -43,8 +41,7 @@
         category: 'Chest',
         equipment: 'Total Gym',
         description: 'Lie supine on glideboard. Sweep hands over chest, driving inner elbows together. Prevents trap involvement.',
-        defaultLevel: 5,
-        targetRIR: 2
+        defaultLevel: 5
       },
       {
         id: 'tg-row',
@@ -52,8 +49,7 @@
         category: 'Back',
         equipment: 'Total Gym',
         description: 'Keep shoulder blades depressed into back pockets. Drive elbows back to ribs.',
-        defaultLevel: 5,
-        targetRIR: 2
+        defaultLevel: 5
       },
       {
         id: 'tg-pullover',
@@ -61,8 +57,7 @@
         category: 'Back',
         equipment: 'Total Gym',
         description: 'Lie on back, pull arms from overhead to hips in controlled arc.',
-        defaultLevel: 5,
-        targetRIR: 2
+        defaultLevel: 5
       },
       {
         id: 'tg-overhead-press',
@@ -70,12 +65,11 @@
         category: 'Shoulders',
         equipment: 'Total Gym',
         description: 'Sit facing away, press upward while keeping core tight and back supported.',
-        defaultLevel: 4,
-        targetRIR: 2
+        defaultLevel: 4
       }
     ];
 
-    // Helper functions for Web Audio API Chimes (Hands-Free Cues)
+    // Audio Chimes for Hands-Free Cues
     const playChime = (freq = 440, type = 'sine', duration = 0.15) => {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -89,21 +83,19 @@
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {
-        // AudioContext may be restricted by browser until first interaction
-      }
+      } catch (e) {}
     };
 
     const playGoChime = () => {
-      playChime(587.33, 'triangle', 0.2); // D5
-      setTimeout(() => playChime(880, 'sine', 0.4), 150); // A5
+      playChime(587.33, 'triangle', 0.2);
+      setTimeout(() => playChime(880, 'sine', 0.4), 150);
     };
 
     function App() {
       const [activeTab, setActiveTab] = useState('workout');
       const [selectedExercise, setSelectedExercise] = useState(PRESET_EXERCISES[0]);
       
-      // Workout Tracking State
+      // Workflow State Machine
       const [settingLevel, setSettingLevel] = useState('Level 5');
       const [activationReps, setActivationReps] = useState(12);
       const [miniSets, setMiniSets] = useState([]);
@@ -112,47 +104,52 @@
       const [isCompleted, setIsCompleted] = useState(false);
       const [workoutLog, setWorkoutLog] = useState([]);
 
-      // Timer effect for 15s rest pause (5 breaths)
+      // Timer Effect for Rest Interval
       useEffect(() => {
         let interval = null;
         if (isResting && restTimer > 0) {
           interval = setInterval(() => {
             setRestTimer((prev) => {
-              const nextTime = prev - 1;
-              // Audio cue every 3 seconds (breath transition)
-              if (nextTime > 0 && nextTime % 3 === 0) {
-                playChime(350, 'sine', 0.1);
+              const next = prev - 1;
+              if (next > 0 && next % 3 === 0) {
+                playChime(350, 'sine', 0.1); // Soft tick on each breath
               }
-              return nextTime;
+              return next;
             });
           }, 1000);
         } else if (restTimer === 0 && isResting) {
           setIsResting(false);
-          playGoChime(); // Play GO chime when rest pause ends
+          playGoChime();
         }
         return () => clearInterval(interval);
       }, [isResting, restTimer]);
 
       const startRestTimer = () => {
-        setRestTimer(15); // 5 deep breaths ~ 15s total
+        setRestTimer(15);
         setIsResting(true);
         playChime(440, 'sine', 0.15);
       };
 
-      const addMiniSet = (reps) => {
-        const newMiniSets = [...miniSets, reps];
-        setMiniSets(newMiniSets);
+      const handleAddMiniSet = (reps) => {
+        if (isResting || isCompleted) return; // Lockout inputs during rest or completion
 
-        // State Machine Transition Logic
-        // IF reps < 3 OR 5 mini-sets completed -> TERMINATE SET
-        if (reps < 3 || newMiniSets.length >= 5) {
+        const updatedMiniSets = [...miniSets, reps];
+        setMiniSets(updatedMiniSets);
+
+        // Auto-Regulation Trigger Logic (<3 reps OR hit max 5 mini-sets)
+        if (reps < 3 || updatedMiniSets.length >= 5) {
           setIsCompleted(true);
           setIsResting(false);
           playGoChime();
         } else {
-          // ELSE -> START REST PAUSE STATE
           startRestTimer();
         }
+      };
+
+      const handleSkipRest = () => {
+        setIsResting(false);
+        setRestTimer(0);
+        playGoChime();
       };
 
       const saveWorkout = () => {
@@ -179,7 +176,6 @@
         setIsCompleted(false);
       };
 
-      // Calculate current breath step out of 5 (3 seconds per breath)
       const currentBreath = Math.min(5, Math.ceil((15 - restTimer) / 3) || 1);
 
       return (
@@ -237,7 +233,7 @@
                 </p>
               </div>
 
-              {/* Setup & Settings */}
+              {/* Load & Activation Setup */}
               <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                 <div className="flex justify-between items-center mb-3">
                   <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
@@ -251,7 +247,6 @@
                   placeholder="e.g. Level 5 or 50lb Band"
                 />
 
-                {/* Activation Set Input */}
                 <div className="border-t border-slate-800 pt-3">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
@@ -264,32 +259,37 @@
                       onChange={(e) => setActivationReps(Number(e.target.value))}
                       className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white"
                     />
-                    <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch motor units before cluster mini-sets.</span>
+                    <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
                   </div>
                 </div>
               </div>
 
-              {/* Interactive 5-Breath Breathing Pacer UX Banner */}
+              {/* Breathing Pacer Banner */}
               {isResting && (
-                <div className="bg-slate-900 border-2 border-emerald-500/80 p-6 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
+                <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                   <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
                     5-BREATH REST PAUSE
                   </span>
                   
-                  {/* Animated Pacer Visual */}
-                  <div className="relative flex items-center justify-center my-4 h-24">
-                    <div className="w-24 h-24 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
-                    <div className="w-20 h-20 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10 shadow-inner">
-                      <span className="text-2xl font-black text-emerald-300">{restTimer}s</span>
-                      <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                  <div className="relative flex items-center justify-center my-2 h-20">
+                    <div className="w-20 h-20 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
+                    <div className="w-16 h-16 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10">
+                      <span className="text-xl font-black text-emerald-300">{restTimer}s</span>
+                      <span className="text-[9px] text-emerald-400 font-bold uppercase">
                         Breath {currentBreath}/5
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-300 font-medium">
-                    Inhale deeply... exhale slowly. Prepare for next mini-set.
-                  </p>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-xs text-slate-400">Resting... inputs locked.</span>
+                    <button 
+                      onClick={handleSkipRest}
+                      className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
+                    >
+                      Skip Rest ➔
+                    </button>
+                  </div>
                 </div>
               )}
 
@@ -297,6 +297,7 @@
               <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                 <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
                 
+                {/* Visual Progress Slots */}
                 <div className="grid grid-cols-5 gap-2 mb-4">
                   {[0, 1, 2, 3, 4].map((idx) => (
                     <div 
@@ -315,16 +316,23 @@
                   ))}
                 </div>
 
-                {/* Input buttons for mini-sets */}
+                {/* Explicit Rep Selector Buttons */}
                 {!isCompleted && (
                   <div>
-                    <label className="block text-xs text-slate-400 mb-2 font-semibold">Log Mini-Set Reps Completed:</label>
+                    <label className="block text-xs text-slate-400 mb-2 font-semibold">
+                      {isResting ? '⏳ Take 5 Deep Breaths...' : 'Tap Reps Completed on Last Mini-Set:'}
+                    </label>
                     <div className="grid grid-cols-5 gap-2">
                       {[5, 4, 3, 2, 1].map((reps) => (
                         <button 
                           key={reps}
-                          onClick={() => addMiniSet(reps)}
-                          className="py-2.5 bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-slate-100 font-bold rounded-lg transition-colors border border-slate-700 text-sm"
+                          disabled={isResting}
+                          onClick={() => handleAddMiniSet(reps)}
+                          className={`py-3 font-black text-sm rounded-lg transition-all border ${
+                            isResting 
+                              ? 'bg-slate-950 border-slate-800 text-slate-700 cursor-not-allowed opacity-50' 
+                              : 'bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-100 border-slate-700 active:scale-95'
+                          }`}
                         >
                           {reps}
                         </button>
@@ -333,12 +341,12 @@
                   </div>
                 )}
 
-                {/* Auto-Regulation Cutoff Warning */}
+                {/* Completion & Auto-Regulation Alert */}
                 {isCompleted && (
-                  <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-3 rounded-lg text-center">
+                  <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
                     <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
                     <p className="text-xs text-slate-300">
-                      Auto-regulation rule triggered. Neuromuscular stimulus maximized for this exercise.
+                      Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.
                     </p>
                     <button 
                       onClick={saveWorkout}
