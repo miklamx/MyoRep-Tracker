@@ -16,7 +16,7 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect } = React;
+    const { useState, useEffect, useRef } = React;
 
     const PRESET_EXERCISES = [
       {
@@ -75,6 +75,30 @@
       }
     ];
 
+    // Helper functions for Web Audio API Chimes (Hands-Free Cues)
+    const playChime = (freq = 440, type = 'sine', duration = 0.15) => {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // AudioContext may be restricted by browser until first interaction
+      }
+    };
+
+    const playGoChime = () => {
+      playChime(587.33, 'triangle', 0.2); // D5
+      setTimeout(() => playChime(880, 'sine', 0.4), 150); // A5
+    };
+
     function App() {
       const [activeTab, setActiveTab] = useState('workout');
       const [selectedExercise, setSelectedExercise] = useState(PRESET_EXERCISES[0]);
@@ -93,10 +117,18 @@
         let interval = null;
         if (isResting && restTimer > 0) {
           interval = setInterval(() => {
-            setRestTimer((prev) => prev - 1);
+            setRestTimer((prev) => {
+              const nextTime = prev - 1;
+              // Audio cue every 3 seconds (breath transition)
+              if (nextTime > 0 && nextTime % 3 === 0) {
+                playChime(350, 'sine', 0.1);
+              }
+              return nextTime;
+            });
           }, 1000);
         } else if (restTimer === 0 && isResting) {
           setIsResting(false);
+          playGoChime(); // Play GO chime when rest pause ends
         }
         return () => clearInterval(interval);
       }, [isResting, restTimer]);
@@ -104,17 +136,21 @@
       const startRestTimer = () => {
         setRestTimer(15); // 5 deep breaths ~ 15s total
         setIsResting(true);
+        playChime(440, 'sine', 0.15);
       };
 
       const addMiniSet = (reps) => {
         const newMiniSets = [...miniSets, reps];
         setMiniSets(newMiniSets);
 
-        // Auto-Regulation Trigger Check (<3 reps or max 5 mini-sets)
+        // State Machine Transition Logic
+        // IF reps < 3 OR 5 mini-sets completed -> TERMINATE SET
         if (reps < 3 || newMiniSets.length >= 5) {
           setIsCompleted(true);
           setIsResting(false);
+          playGoChime();
         } else {
+          // ELSE -> START REST PAUSE STATE
           startRestTimer();
         }
       };
