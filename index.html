@@ -1,491 +1,448 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MyoRep Tracker - Total Gym & Resistance Bands</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
-  <div id="root"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MyoRep Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
 
-    const STORAGE_KEY = 'myorep-tracker-workout-log';
-    const MAX_MINI_SETS = 5;
+      const STORAGE_KEY = 'myorep-history';
 
-    const PRESET_EXERCISES = [
-      {
-        id: 'tg-squat',
-        name: 'Single-Leg Squat (Pistol Press)',
-        category: 'Legs',
-        equipment: 'Total Gym',
-        description: 'Drive through mid-foot/heel. Keep knee tracking over second toe.',
-        defaultLevel: 5
-      },
-      {
-        id: 'band-deadlift',
-        name: 'Foot-Anchored Band Deadlift',
-        category: 'Legs',
-        equipment: 'Resistance Bands',
-        description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward at top.',
-        defaultLevel: 'Heavy Loop'
-      },
-      {
-        id: 'tg-crossover',
-        name: 'Lying Cable Crossover / Fly',
-        category: 'Chest',
-        equipment: 'Total Gym',
-        description: 'Lie supine on glideboard. Sweep hands over chest, driving inner elbows together. Prevents trap involvement.',
-        defaultLevel: 5
-      },
-      {
-        id: 'tg-row',
-        name: 'Seated Low Cable Row',
-        category: 'Back',
-        equipment: 'Total Gym',
-        description: 'Keep shoulder blades depressed into back pockets. Drive elbows back to ribs.',
-        defaultLevel: 5
-      },
-      {
-        id: 'tg-pullover',
-        name: 'Supine Arm Pullover',
-        category: 'Back',
-        equipment: 'Total Gym',
-        description: 'Lie on back, pull arms from overhead to hips in controlled arc.',
-        defaultLevel: 5
-      },
-      {
-        id: 'tg-overhead-press',
-        name: 'Seated Overhead Press',
-        category: 'Shoulders',
-        equipment: 'Total Gym',
-        description: 'Sit facing away, press upward while keeping core tight and back supported.',
-        defaultLevel: 4
-      }
-    ];
-
-    const getAudioContext = () => {
-      const AudioCtor = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtor) return null;
-      if (!window.__myorepAudioContext) {
-        window.__myorepAudioContext = new AudioCtor();
-      }
-      return window.__myorepAudioContext;
-    };
-
-    const playChime = (freq = 440, type = 'sine', duration = 0.15) => {
-      try {
-        const audioCtx = getAudioContext();
-        if (!audioCtx) return;
-
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume();
+      const EXERCISES = [
+        {
+          id: 'tg-squat',
+          name: 'Single-Leg Squat (Pistol Press)',
+          equipment: 'Total Gym',
+          description: 'Drive through mid-foot/heel. Keep knee tracking over second toe.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'band-deadlift',
+          name: 'Foot-Anchored Band Deadlift',
+          equipment: 'Resistance Bands',
+          description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward at top.',
+          defaultLevel: 'Heavy Loop'
+        },
+        {
+          id: 'tg-crossover',
+          name: 'Lying Cable Crossover / Fly',
+          equipment: 'Total Gym',
+          description: 'Lie supine on glideboard. Sweep hands over chest, driving inner elbows together.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-row',
+          name: 'Seated Low Cable Row',
+          equipment: 'Total Gym',
+          description: 'Keep shoulder blades depressed into back pockets. Drive elbows back to ribs.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-pullover',
+          name: 'Supine Arm Pullover',
+          equipment: 'Total Gym',
+          description: 'Lie on back, pull arms from overhead to hips in controlled arc.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-overhead-press',
+          name: 'Seated Overhead Press',
+          equipment: 'Total Gym',
+          description: 'Sit facing away, press upward while keeping core tight and back supported.',
+          defaultLevel: 'Level 4'
         }
+      ];
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (error) {
-        // Ignore browser autoplay restrictions and unsupported audio features.
+      function getAudioContext() {
+        const AudioCtor = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtor) return null;
+        if (!window.__myorepAudioContext) {
+          window.__myorepAudioContext = new AudioCtor();
+        }
+        return window.__myorepAudioContext;
       }
-    };
 
-    const playGoChime = () => {
-      playChime(587.33, 'triangle', 0.2);
-      if (window.__myorepChimeTimeout) {
-        clearTimeout(window.__myorepChimeTimeout);
-      }
-      window.__myorepChimeTimeout = window.setTimeout(() => playChime(880, 'sine', 0.4), 150);
-    };
-
-    function App() {
-      const [activeTab, setActiveTab] = useState('workout');
-      const [selectedExercise, setSelectedExercise] = useState(PRESET_EXERCISES[0]);
-      const [settingLevel, setSettingLevel] = useState('Level 5');
-      const [activationReps, setActivationReps] = useState(12);
-      const [miniSets, setMiniSets] = useState([]);
-      const [selectedReps, setSelectedReps] = useState(null);
-      const [restTimer, setRestTimer] = useState(0);
-      const [isResting, setIsResting] = useState(false);
-      const [isCompleted, setIsCompleted] = useState(false);
-      const [workoutLog, setWorkoutLog] = useState([]);
-
-      const timerRef = useRef(null);
-
-      useEffect(() => {
+      function playChime(freq = 440, type = 'sine', duration = 0.15) {
         try {
-          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-          if (Array.isArray(saved)) {
-            setWorkoutLog(saved);
-          }
-        } catch (error) {
-          console.warn('Unable to load saved workout log:', error);
-        }
-      }, []);
+          const ctx = getAudioContext();
+          if (!ctx) return;
+          if (ctx.state === 'suspended') ctx.resume();
 
-      useEffect(() => {
-        try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(workoutLog));
-        } catch (error) {
-          console.warn('Unable to save workout log:', error);
-        }
-      }, [workoutLog]);
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
 
-      useEffect(() => {
-        return () => {
-          if (timerRef.current) {
-            clearTimeout(timerRef.current);
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          gain.gain.setValueAtTime(0.07, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch (e) {
+          // Browser may block audio until interaction.
+        }
+      }
+
+      function playGoChime() {
+        playChime(587.33, 'triangle', 0.2);
+        setTimeout(() => playChime(880, 'sine', 0.4), 150);
+      }
+
+      function App() {
+        const [activeTab, setActiveTab] = useState('workout');
+        const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
+        const [settingLevel, setSettingLevel] = useState('Level 5');
+        const [activationReps, setActivationReps] = useState(12);
+        const [miniSets, setMiniSets] = useState([]);
+        const [selectedReps, setSelectedReps] = useState(null);
+        const [restTimer, setRestTimer] = useState(0);
+        const [isResting, setIsResting] = useState(false);
+        const [isCompleted, setIsCompleted] = useState(false);
+        const [history, setHistory] = useState([]);
+
+        const timerRef = useRef(null);
+        const exercise = EXERCISES.find((item) => item.id === selectedExerciseId) || EXERCISES[0];
+
+        useEffect(() => {
+          try {
+            const loaded = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            if (Array.isArray(loaded)) setHistory(loaded);
+          } catch (e) {
+            console.warn('Failed to load workout history', e);
           }
-          if (window.__myorepChimeTimeout) {
-            clearTimeout(window.__myorepChimeTimeout);
+        }, []);
+
+        useEffect(() => {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+          } catch (e) {
+            console.warn('Failed to save workout history', e);
           }
+        }, [history]);
+
+        useEffect(() => {
+          return () => {
+            if (timerRef.current) clearTimeout(timerRef.current);
+          };
+        }, []);
+
+        useEffect(() => {
+          if (!isResting) return;
+
+          if (restTimer <= 0) {
+            setIsResting(false);
+            setRestTimer(0);
+            playGoChime();
+            return;
+          }
+
+          timerRef.current = setTimeout(() => {
+            setRestTimer((prev) => prev - 1);
+          }, 1000);
+
+          return () => {
+            if (timerRef.current) {
+              clearTimeout(timerRef.current);
+              timerRef.current = null;
+            }
+          };
+        }, [isResting, restTimer]);
+
+        useEffect(() => {
+          if (isResting && restTimer > 0 && restTimer % 3 === 0) {
+            playChime(350, 'sine', 0.1);
+          }
+        }, [isResting, restTimer]);
+
+        const resetSession = () => {
+          setMiniSets([]);
+          setSelectedReps(null);
+          setActivationReps(12);
+          setIsResting(false);
+          setRestTimer(0);
+          setIsCompleted(false);
         };
-      }, []);
 
-      const finishRest = useCallback(() => {
-        setIsResting(false);
-        setRestTimer(0);
-        playGoChime();
-      }, []);
-
-      useEffect(() => {
-        if (!isResting) return;
-
-        if (restTimer <= 0) {
-          finishRest();
-          return;
-        }
-
-        timerRef.current = setTimeout(() => {
-          setRestTimer((prev) => prev - 1);
-        }, 1000);
-
-        return () => {
-          if (timerRef.current) {
-            clearTimeout(timerRef.current);
-            timerRef.current = null;
-          }
+        const handleExerciseChange = (event) => {
+          const nextId = event.target.value;
+          const nextExercise = EXERCISES.find((item) => item.id === nextId);
+          setSelectedExerciseId(nextId);
+          setSettingLevel(nextExercise?.defaultLevel || 'Level 5');
+          resetSession();
         };
-      }, [isResting, restTimer, finishRest]);
 
-      useEffect(() => {
-        if (!isResting || restTimer <= 0) return;
-        if (restTimer % 3 === 0) {
-          playChime(350, 'sine', 0.1);
-        }
-      }, [isResting, restTimer]);
+        const handlePickReps = (reps) => {
+          if (isResting || isCompleted) return;
+          setSelectedReps(reps);
+        };
 
-      const handlePickReps = useCallback((reps) => {
-        if (isResting || isCompleted) return;
-        const bounded = Math.max(1, Math.min(5, Number(reps) || 1));
-        setSelectedReps(bounded);
-      }, [isResting, isCompleted]);
+        const handleConfirmAndStartRest = () => {
+          if (selectedReps === null || isResting || isCompleted) return;
 
-      const handleConfirmAndStartRest = useCallback(() => {
-        if (selectedReps === null || isResting || isCompleted) return;
+          const nextMiniSets = [...miniSets, selectedReps];
+          setMiniSets(nextMiniSets);
+          setSelectedReps(null);
 
-        const repsLogged = selectedReps;
-        const nextMiniSets = [...miniSets, repsLogged];
+          if (selectedReps < 3 || nextMiniSets.length >= 5) {
+            setIsCompleted(true);
+            setIsResting(false);
+            setRestTimer(0);
+            playGoChime();
+            return;
+          }
 
-        setMiniSets(nextMiniSets);
-        setSelectedReps(null);
+          setRestTimer(15);
+          setIsResting(true);
+          playChime(440, 'sine', 0.15);
+        };
 
-        if (repsLogged < 3 || nextMiniSets.length >= MAX_MINI_SETS) {
-          setIsCompleted(true);
+        const handleSkipRest = () => {
           setIsResting(false);
           setRestTimer(0);
           playGoChime();
-          return;
-        }
-
-        setRestTimer(15);
-        setIsResting(true);
-        playChime(440, 'sine', 0.15);
-      }, [selectedReps, miniSets, isResting, isCompleted]);
-
-      const handleSkipRest = useCallback(() => {
-        finishRest();
-      }, [finishRest]);
-
-      const resetSession = useCallback(() => {
-        setMiniSets([]);
-        setSelectedReps(null);
-        setActivationReps(12);
-        setIsResting(false);
-        setRestTimer(0);
-        setIsCompleted(false);
-      }, []);
-
-      const saveWorkout = useCallback(() => {
-        const newEntry = {
-          id: Date.now(),
-          date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          exercise: selectedExercise.name,
-          equipment: selectedExercise.equipment,
-          setting: settingLevel,
-          activationReps,
-          miniSets,
-          totalReps: activationReps + miniSets.reduce((sum, value) => sum + value, 0)
         };
 
-        setWorkoutLog((prev) => [newEntry, ...prev]);
-        resetSession();
-      }, [selectedExercise, settingLevel, activationReps, miniSets, resetSession]);
+        const saveWorkout = () => {
+          const newEntry = {
+            id: Date.now(),
+            date: new Date().toLocaleString(),
+            exercise: exercise.name,
+            equipment: exercise.equipment,
+            setting: settingLevel,
+            activationReps,
+            miniSets,
+            totalReps: activationReps + miniSets.reduce((sum, value) => sum + value, 0)
+          };
 
-      const currentBreath = useMemo(() => {
-        if (restTimer <= 0) return 1;
-        return Math.min(5, Math.ceil((15 - restTimer) / 3) || 1);
-      }, [restTimer]);
+          setHistory((previous) => [newEntry, ...previous]);
+          resetSession();
+        };
 
-      return (
-        <div className="max-w-md mx-auto p-4 pb-20">
-          <header className="mb-6 border-b border-slate-800 pb-4">
-            <div className="flex justify-between items-center">
-              <div>
-                <h1 className="text-xl font-black tracking-tight text-emerald-400">MYOREP TRACKER</h1>
-                <p className="text-xs text-slate-400">Total Gym & Resistance Bands Engine</p>
+        const currentBreath = restTimer <= 0 ? 1 : Math.min(5, Math.ceil((15 - restTimer) / 3) || 1);
+
+        return (
+          <div className="max-w-md mx-auto p-4 pb-20">
+            <header className="mb-6 border-b border-slate-800 pb-4">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h1 className="text-xl font-black tracking-tight text-emerald-400">MYOREP TRACKER</h1>
+                  <p className="text-xs text-slate-400">Total Gym & Resistance Bands Engine</p>
+                </div>
+                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                  RPE 8 Protocol
+                </span>
               </div>
-              <span className="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
-                RPE 8 Protocol
-              </span>
+            </header>
+
+            <div className="flex gap-2 mb-6 bg-slate-900 p-1 rounded-lg border border-slate-800">
+              <button
+                type="button"
+                onClick={() => setActiveTab('workout')}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeTab === 'workout' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+              >
+                WORKOUT
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab('history')}
+                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeTab === 'history' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+              >
+                HISTORY ({history.length})
+              </button>
             </div>
-          </header>
 
-          <div className="flex gap-2 mb-6 bg-slate-900 p-1 rounded-lg border border-slate-800">
-            <button
-              type="button"
-              onClick={() => setActiveTab('workout')}
-              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeTab === 'workout' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
-            >
-              WORKOUT
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab('history')}
-              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeTab === 'history' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
-            >
-              HISTORY ({workoutLog.length})
-            </button>
-          </div>
-
-          {activeTab === 'workout' ? (
-            <div className="space-y-6">
-              <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
-                <select
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500"
-                  value={selectedExercise.id}
-                  onChange={(e) => {
-                    const ex = PRESET_EXERCISES.find((item) => item.id === e.target.value);
-                    if (!ex) return;
-                    setSelectedExercise(ex);
-                    setSettingLevel(ex.equipment === 'Total Gym' ? 'Level 5' : 'Heavy Loop');
-                    resetSession();
-                  }}
-                >
-                  {PRESET_EXERCISES.map((ex) => (
-                    <option key={ex.id} value={ex.id}>{ex.name} ({ex.equipment})</option>
-                  ))}
-                </select>
-                <p className="text-xs text-slate-400 mt-2 italic bg-slate-950 p-2 rounded border border-slate-800">
-                  💡 {selectedExercise.description}
-                </p>
-              </div>
-
-              <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
-                  <span className="text-xs text-emerald-400 font-bold">{selectedExercise.equipment}</span>
+            {activeTab === 'workout' ? (
+              <div className="space-y-6">
+                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
+                  <select
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500"
+                    value={selectedExerciseId}
+                    onChange={handleExerciseChange}
+                  >
+                    {EXERCISES.map((item) => (
+                      <option key={item.id} value={item.id}>{item.name} ({item.equipment})</option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-slate-400 mt-2 italic bg-slate-950 p-2 rounded border border-slate-800">
+                    💡 {exercise.description}
+                  </p>
                 </div>
-                <input
-                  type="text"
-                  value={settingLevel}
-                  onChange={(e) => setSettingLevel(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-center font-bold text-emerald-400 mb-4"
-                  placeholder="e.g. Level 5 or 50lb Band"
-                />
 
-                <div className="border-t border-slate-800 pt-3">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
-                    <span className="text-xs text-slate-400">Target: 12-15 Reps</span>
+                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                  <div className="flex justify-between items-center mb-3">
+                    <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
+                    <span className="text-xs text-emerald-400 font-bold">{exercise.equipment}</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="number"
-                      min="1"
-                      max="30"
-                      value={activationReps}
-                      onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
-                      className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white"
-                    />
-                    <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
-                  </div>
-                </div>
-              </div>
+                  <input
+                    type="text"
+                    value={settingLevel}
+                    onChange={(e) => setSettingLevel(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-center font-bold text-emerald-400 mb-4"
+                    placeholder="e.g. Level 5 or 50lb Band"
+                  />
 
-              {isResting && (
-                <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
-                  <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
-                    5-BREATH REST PAUSE
-                  </span>
-
-                  <div className="relative flex items-center justify-center my-2 h-20">
-                    <div className="w-20 h-20 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
-                    <div className="w-16 h-16 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10">
-                      <span className="text-xl font-black text-emerald-300">{restTimer}s</span>
-                      <span className="text-[9px] text-emerald-400 font-bold uppercase">
-                        Breath {currentBreath}/5
-                      </span>
+                  <div className="border-t border-slate-800 pt-3">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
+                      <span className="text-xs text-slate-400">Target: 12-15 Reps</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="number"
+                        min="1"
+                        max="30"
+                        value={activationReps}
+                        onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
+                        className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white"
+                      />
+                      <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
-                    <button
-                      type="button"
-                      onClick={handleSkipRest}
-                      className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
-                    >
-                      Skip Rest ➔
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
-
-                <div className="grid grid-cols-5 gap-2 mb-4">
-                  {[0, 1, 2, 3, 4].map((idx) => (
-                    <div
-                      key={idx}
-                      className={`p-3 rounded-lg border text-center transition-all ${
-                        miniSets[idx] !== undefined
-                          ? miniSets[idx] < 3
-                            ? 'bg-rose-950 border-rose-700 text-rose-300'
-                            : 'bg-emerald-950 border-emerald-700 text-emerald-300'
-                          : 'bg-slate-950 border-slate-800 text-slate-600'
-                      }`}
-                    >
-                      <div className="text-[10px] font-bold text-slate-500 mb-1">M{idx + 1}</div>
-                      <div className="text-base font-black">{miniSets[idx] !== undefined ? miniSets[idx] : '-'}</div>
-                    </div>
-                  ))}
                 </div>
 
-                {!isCompleted && !isResting && (
-                  <div className="space-y-3 pt-2 border-t border-slate-800">
-                    <label className="block text-xs text-slate-300 font-bold">
-                      Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
-                    </label>
-
-                    <div className="grid grid-cols-5 gap-2">
-                      {[5, 4, 3, 2, 1].map((reps) => (
-                        <button
-                          type="button"
-                          key={reps}
-                          aria-pressed={selectedReps === reps}
-                          onClick={(event) => {
-                            event.preventDefault();
-                            handlePickReps(reps);
-                          }}
-                          className={`py-3.5 font-black text-base rounded-lg transition-all border ${
-                            selectedReps === reps
-                              ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md scale-105'
-                              : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-slate-700 active:scale-95'
-                          }`}
-                        >
-                          {reps}
-                        </button>
-                      ))}
+                {isResting && (
+                  <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
+                    <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
+                      5-BREATH REST PAUSE
+                    </span>
+                    <div className="relative flex items-center justify-center my-2 h-20">
+                      <div className="w-20 h-20 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
+                      <div className="w-16 h-16 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10">
+                        <span className="text-xl font-black text-emerald-300">{restTimer}s</span>
+                        <span className="text-[9px] text-emerald-400 font-bold uppercase">Breath {currentBreath}/5</span>
+                      </div>
                     </div>
-
-                    {selectedReps !== null && (
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
                       <button
                         type="button"
-                        onClick={(event) => {
-                          event.preventDefault();
-                          handleConfirmAndStartRest();
-                        }}
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30"
+                        onClick={handleSkipRest}
+                        className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
                       >
-                        Step 2: Confirm {selectedReps} Reps & Start 5-Breath Rest ➔
+                        Skip Rest ➔
                       </button>
-                    )}
+                    </div>
                   </div>
                 )}
 
-                {isCompleted && (
-                  <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
-                    <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
-                    <p className="text-xs text-slate-300">
-                      Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={saveWorkout}
-                      className="mt-3 w-full py-2.5 bg-emerald-500 text-slate-950 font-black text-xs rounded-lg hover:bg-emerald-400 transition-colors uppercase tracking-wider"
-                    >
-                      SAVE TO HISTORY LOG
-                    </button>
+                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                  <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
+
+                  <div className="grid grid-cols-5 gap-2 mb-4">
+                    {[0, 1, 2, 3, 4].map((idx) => (
+                      <div
+                        key={idx}
+                        className={`p-3 rounded-lg border text-center transition-all ${
+                          miniSets[idx] !== undefined
+                            ? miniSets[idx] < 3
+                              ? 'bg-rose-950 border-rose-700 text-rose-300'
+                              : 'bg-emerald-950 border-emerald-700 text-emerald-300'
+                            : 'bg-slate-950 border-slate-800 text-slate-600'
+                        }`}
+                      >
+                        <div className="text-[10px] font-bold text-slate-500 mb-1">M{idx + 1}</div>
+                        <div className="text-base font-black">{miniSets[idx] !== undefined ? miniSets[idx] : '-'}</div>
+                      </div>
+                    ))}
                   </div>
+
+                  {!isCompleted && !isResting && (
+                    <div className="space-y-3 pt-2 border-t border-slate-800">
+                      <label className="block text-xs text-slate-300 font-bold">
+                        Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
+                      </label>
+
+                      <div className="grid grid-cols-5 gap-2">
+                        {[5, 4, 3, 2, 1].map((reps) => (
+                          <button
+                            type="button"
+                            key={reps}
+                            onClick={() => handlePickReps(reps)}
+                            className={`py-3.5 font-black text-base rounded-lg transition-all border ${
+                              selectedReps === reps
+                                ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md scale-105'
+                                : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-slate-700 active:scale-95'
+                            }`}
+                          >
+                            {reps}
+                          </button>
+                        ))}
+                      </div>
+
+                      {selectedReps !== null && (
+                        <button
+                          type="button"
+                          onClick={handleConfirmAndStartRest}
+                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30"
+                        >
+                          Step 2: Confirm {selectedReps} Reps & Start 5-Breath Rest ➔
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  {isCompleted && (
+                    <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
+                      <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
+                      <p className="text-xs text-slate-300">Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.</p>
+                      <button
+                        type="button"
+                        onClick={saveWorkout}
+                        className="mt-3 w-full py-2.5 bg-emerald-500 text-slate-950 font-black text-xs rounded-lg hover:bg-emerald-400 transition-colors uppercase tracking-wider"
+                      >
+                        SAVE TO HISTORY LOG
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {history.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
+                    <p className="text-slate-500 text-sm font-semibold">No saved workouts yet.</p>
+                    <p className="text-xs text-slate-600 mt-1">Complete a Myo-Rep session to view history.</p>
+                  </div>
+                ) : (
+                  history.map((log) => (
+                    <div key={log.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-bold text-sm text-slate-100">{log.exercise}</h4>
+                          <span className="text-xs text-slate-400">{log.date}</span>
+                        </div>
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">
+                          {log.setting}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
+                        <span className="text-slate-400">Activation: <strong className="text-slate-200">{log.activationReps} reps</strong></span>
+                        <span className="text-slate-400">Mini-Sets: <strong className="text-emerald-400">[{log.miniSets.join(', ')}]</strong></span>
+                        <span className="text-slate-400">Total: <strong className="text-white">{log.totalReps}</strong></span>
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {workoutLog.length === 0 ? (
-                <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
-                  <p className="text-slate-500 text-sm font-semibold">No saved workouts yet.</p>
-                  <p className="text-xs text-slate-600 mt-1">Complete a Myo-Rep session to view history.</p>
-                </div>
-              ) : (
-                workoutLog.map((log) => (
-                  <div key={log.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-100">{log.exercise}</h4>
-                        <span className="text-xs text-slate-400">{log.date}</span>
-                      </div>
-                      <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">
-                        {log.setting}
-                      </span>
-                    </div>
+            )}
+          </div>
+        );
+      }
 
-                    <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
-                      <span className="text-slate-400">Activation: <strong className="text-slate-200">{log.activationReps} reps</strong></span>
-                      <span className="text-slate-400">Mini-Sets: <strong className="text-emerald-400">[{log.miniSets.join(', ')}]</strong></span>
-                      <span className="text-slate-400">Total: <strong className="text-white">{log.totalReps}</strong></span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    const container = document.getElementById('root');
-    const root = ReactDOM.createRoot(container);
-    root.render(<App />);
-  </script>
-</body>
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
 </html>
