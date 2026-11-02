@@ -99,7 +99,7 @@
       const [settingLevel, setSettingLevel] = useState('Level 5');
       const [activationReps, setActivationReps] = useState(12);
       const [miniSets, setMiniSets] = useState([]);
-      const [selectedRepInput, setSelectedRepInput] = useState(null); // Explicit selection before countdown
+      const [pendingReps, setPendingReps] = useState(null); // Holds selected rep count explicitly
       const [restTimer, setRestTimer] = useState(0);
       const [isResting, setIsResting] = useState(false);
       const [isCompleted, setIsCompleted] = useState(false);
@@ -125,14 +125,19 @@
         return () => clearInterval(interval);
       }, [isResting, restTimer]);
 
-      // Confirm reps and advance State Machine
-      const confirmMiniSetAndStartRest = () => {
-        if (selectedRepInput === null || isResting || isCompleted) return;
+      // Direct selection handler
+      const handleSelectReps = (reps) => {
+        setPendingReps(reps);
+      };
 
-        const reps = selectedRepInput;
+      // Confirm selected reps and advance state machine
+      const handleConfirmAndStartRest = () => {
+        if (pendingReps === null || isResting || isCompleted) return;
+
+        const reps = pendingReps;
         const updatedMiniSets = [...miniSets, reps];
         setMiniSets(updatedMiniSets);
-        setSelectedRepInput(null); // Reset selection
+        setPendingReps(null); // Clear pending selection
 
         // Auto-Regulation Trigger Logic (<3 reps OR max 5 mini-sets)
         if (reps < 3 || updatedMiniSets.length >= 5) {
@@ -140,7 +145,7 @@
           setIsResting(false);
           playGoChime();
         } else {
-          // Launch 5-Breath Countdown
+          // Launch 5-Breath Rest Countdown
           setRestTimer(15);
           setIsResting(true);
           playChime(440, 'sine', 0.15);
@@ -171,7 +176,7 @@
 
       const resetSession = () => {
         setMiniSets([]);
-        setSelectedRepInput(null);
+        setPendingReps(null);
         setActivationReps(12);
         setIsResting(false);
         setRestTimer(0);
@@ -266,7 +271,7 @@
                 </div>
               </div>
 
-              {/* Breathing Pacer Banner (Runs ONLY after confirmation) */}
+              {/* Breathing Pacer Banner */}
               {isResting && (
                 <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                   <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -322,16 +327,16 @@
                 {!isCompleted && !isResting && (
                   <div className="space-y-3">
                     <label className="block text-xs text-slate-400 font-semibold">
-                      Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
+                      Select Reps Completed for Mini-Set #{miniSets.length + 1}:
                     </label>
                     
                     <div className="grid grid-cols-5 gap-2">
                       {[5, 4, 3, 2, 1].map((reps) => (
                         <button 
                           key={reps}
-                          onClick={() => setSelectedRepInput(reps)}
+                          onClick={() => handleSelectReps(reps)}
                           className={`py-3 font-black text-sm rounded-lg transition-all border ${
-                            selectedRepInput === reps
+                            pendingReps === reps
                               ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md scale-105'
                               : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-slate-700'
                           }`}
@@ -341,13 +346,13 @@
                       ))}
                     </div>
 
-                    {/* Confirmation Button launches the 5-Breath Countdown */}
-                    {selectedRepInput !== null && (
+                    {/* Confirmation Button */}
+                    {pendingReps !== null && (
                       <button
-                        onClick={confirmMiniSetAndStartRest}
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/50 animate-bounce"
+                        onClick={handleConfirmAndStartRest}
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/50 mt-2"
                       >
-                        Confirm {selectedRepInput} Reps & Start 5-Breath Rest ➔
+                        Confirm {pendingReps} Reps & Start 5-Breath Rest ➔
                       </button>
                     )}
                   </div>
