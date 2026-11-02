@@ -1,34 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyoRep Tracker</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 2rem;
-        background: #f8fafc;
-        color: #1f2937;
-      }
-      .container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-      }
-      h1 {
-        color: #111827;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>MyoRep Tracker</h1>
-      <p>Welcome to the MyoRep Tracker repository.</p>
-      <p>This is a simple HTML landing page added to the project.</p>
-    </div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyoRep Tracker - Total Gym & Resistance Bands</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- React & React DOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <!-- Babel Standalone for JSX compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-950 text-slate-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // Paste the full App component code generated above here
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
 </html>
