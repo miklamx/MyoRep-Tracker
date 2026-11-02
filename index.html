@@ -69,7 +69,7 @@
       }
     ];
 
-    // Audio Chimes for Hands-Free Cues
+    // Audio Chimes Engine
     const playChime = (freq = 440, type = 'sine', duration = 0.15) => {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -95,16 +95,17 @@
       const [activeTab, setActiveTab] = useState('workout');
       const [selectedExercise, setSelectedExercise] = useState(PRESET_EXERCISES[0]);
       
-      // Workflow State Machine
+      // State Machine Variable Control
       const [settingLevel, setSettingLevel] = useState('Level 5');
       const [activationReps, setActivationReps] = useState(12);
       const [miniSets, setMiniSets] = useState([]);
+      const [selectedRepInput, setSelectedRepInput] = useState(null); // Explicit selection before countdown
       const [restTimer, setRestTimer] = useState(0);
       const [isResting, setIsResting] = useState(false);
       const [isCompleted, setIsCompleted] = useState(false);
       const [workoutLog, setWorkoutLog] = useState([]);
 
-      // Timer Effect for Rest Interval
+      // Timer Effect for 15-second (5-breath) rest pause
       useEffect(() => {
         let interval = null;
         if (isResting && restTimer > 0) {
@@ -112,7 +113,7 @@
             setRestTimer((prev) => {
               const next = prev - 1;
               if (next > 0 && next % 3 === 0) {
-                playChime(350, 'sine', 0.1); // Soft tick on each breath
+                playChime(350, 'sine', 0.1);
               }
               return next;
             });
@@ -124,25 +125,25 @@
         return () => clearInterval(interval);
       }, [isResting, restTimer]);
 
-      const startRestTimer = () => {
-        setRestTimer(15);
-        setIsResting(true);
-        playChime(440, 'sine', 0.15);
-      };
+      // Confirm reps and advance State Machine
+      const confirmMiniSetAndStartRest = () => {
+        if (selectedRepInput === null || isResting || isCompleted) return;
 
-      const handleAddMiniSet = (reps) => {
-        if (isResting || isCompleted) return; // Lockout inputs during rest or completion
-
+        const reps = selectedRepInput;
         const updatedMiniSets = [...miniSets, reps];
         setMiniSets(updatedMiniSets);
+        setSelectedRepInput(null); // Reset selection
 
-        // Auto-Regulation Trigger Logic (<3 reps OR hit max 5 mini-sets)
+        // Auto-Regulation Trigger Logic (<3 reps OR max 5 mini-sets)
         if (reps < 3 || updatedMiniSets.length >= 5) {
           setIsCompleted(true);
           setIsResting(false);
           playGoChime();
         } else {
-          startRestTimer();
+          // Launch 5-Breath Countdown
+          setRestTimer(15);
+          setIsResting(true);
+          playChime(440, 'sine', 0.15);
         }
       };
 
@@ -170,6 +171,7 @@
 
       const resetSession = () => {
         setMiniSets([]);
+        setSelectedRepInput(null);
         setActivationReps(12);
         setIsResting(false);
         setRestTimer(0);
@@ -264,7 +266,7 @@
                 </div>
               </div>
 
-              {/* Breathing Pacer Banner */}
+              {/* Breathing Pacer Banner (Runs ONLY after confirmation) */}
               {isResting && (
                 <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                   <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -282,7 +284,7 @@
                   </div>
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs text-slate-400">Resting... inputs locked.</span>
+                    <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
                     <button 
                       onClick={handleSkipRest}
                       className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
@@ -316,37 +318,47 @@
                   ))}
                 </div>
 
-                {/* Explicit Rep Selector Buttons */}
-                {!isCompleted && (
-                  <div>
-                    <label className="block text-xs text-slate-400 mb-2 font-semibold">
-                      {isResting ? '⏳ Take 5 Deep Breaths...' : 'Tap Reps Completed on Last Mini-Set:'}
+                {/* Explicit Rep Selector and Confirmation Trigger */}
+                {!isCompleted && !isResting && (
+                  <div className="space-y-3">
+                    <label className="block text-xs text-slate-400 font-semibold">
+                      Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
                     </label>
+                    
                     <div className="grid grid-cols-5 gap-2">
                       {[5, 4, 3, 2, 1].map((reps) => (
                         <button 
                           key={reps}
-                          disabled={isResting}
-                          onClick={() => handleAddMiniSet(reps)}
+                          onClick={() => setSelectedRepInput(reps)}
                           className={`py-3 font-black text-sm rounded-lg transition-all border ${
-                            isResting 
-                              ? 'bg-slate-950 border-slate-800 text-slate-700 cursor-not-allowed opacity-50' 
-                              : 'bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-100 border-slate-700 active:scale-95'
+                            selectedRepInput === reps
+                              ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md scale-105'
+                              : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-slate-700'
                           }`}
                         >
                           {reps}
                         </button>
                       ))}
                     </div>
+
+                    {/* Confirmation Button launches the 5-Breath Countdown */}
+                    {selectedRepInput !== null && (
+                      <button
+                        onClick={confirmMiniSetAndStartRest}
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/50 animate-bounce"
+                      >
+                        Confirm {selectedRepInput} Reps & Start 5-Breath Rest ➔
+                      </button>
+                    )}
                   </div>
                 )}
 
-                {/* Completion & Auto-Regulation Alert */}
+                {/* Completion Alert */}
                 {isCompleted && (
                   <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
                     <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
                     <p className="text-xs text-slate-300">
-                      Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.
+                      Auto-regulation trigger reached. Neuromuscular stimulus maximized.
                     </p>
                     <button 
                       onClick={saveWorkout}
