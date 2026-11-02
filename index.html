@@ -88,7 +88,7 @@
       const [isCompleted, setIsCompleted] = useState(false);
       const [workoutLog, setWorkoutLog] = useState([]);
 
-      // Timer effect
+      // Timer effect for 15s rest pause (5 breaths)
       useEffect(() => {
         let interval = null;
         if (isResting && restTimer > 0) {
@@ -102,7 +102,7 @@
       }, [isResting, restTimer]);
 
       const startRestTimer = () => {
-        setRestTimer(15); // 5 deep breaths ~ 15s
+        setRestTimer(15); // 5 deep breaths ~ 15s total
         setIsResting(true);
       };
 
@@ -110,7 +110,7 @@
         const newMiniSets = [...miniSets, reps];
         setMiniSets(newMiniSets);
 
-        // Auto-Regulation Trigger Check
+        // Auto-Regulation Trigger Check (<3 reps or max 5 mini-sets)
         if (reps < 3 || newMiniSets.length >= 5) {
           setIsCompleted(true);
           setIsResting(false);
@@ -142,6 +142,9 @@
         setRestTimer(0);
         setIsCompleted(false);
       };
+
+      // Calculate current breath step out of 5 (3 seconds per breath)
+      const currentBreath = Math.min(5, Math.ceil((15 - restTimer) / 3) || 1);
 
       return (
         <div className="max-w-md mx-auto p-4 pb-20">
@@ -230,12 +233,27 @@
                 </div>
               </div>
 
-              {/* Rest Pause Timer Banner */}
+              {/* Interactive 5-Breath Breathing Pacer UX Banner */}
               {isResting && (
-                <div className="bg-amber-950 border border-amber-600/50 p-4 rounded-xl text-center animate-pulse">
-                  <span className="text-xs font-black uppercase text-amber-400 tracking-wider">5-BREATH REST PAUSE</span>
-                  <div className="text-4xl font-black text-amber-300 my-1">{restTimer}s</div>
-                  <p className="text-xs text-amber-200">Take 5 deep breaths (~15s) then start next mini-set.</p>
+                <div className="bg-slate-900 border-2 border-emerald-500/80 p-6 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
+                  <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
+                    5-BREATH REST PAUSE
+                  </span>
+                  
+                  {/* Animated Pacer Visual */}
+                  <div className="relative flex items-center justify-center my-4 h-24">
+                    <div className="w-24 h-24 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
+                    <div className="w-20 h-20 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10 shadow-inner">
+                      <span className="text-2xl font-black text-emerald-300">{restTimer}s</span>
+                      <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider">
+                        Breath {currentBreath}/5
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-slate-300 font-medium">
+                    Inhale deeply... exhale slowly. Prepare for next mini-set.
+                  </p>
                 </div>
               )}
 
@@ -270,7 +288,7 @@
                         <button 
                           key={reps}
                           onClick={() => addMiniSet(reps)}
-                          className="py-2.5 bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-slate-100 font-bold rounded-lg transition-colors border border-slate-700"
+                          className="py-2.5 bg-slate-800 hover:bg-emerald-600 hover:text-slate-950 text-slate-100 font-bold rounded-lg transition-colors border border-slate-700 text-sm"
                         >
                           {reps}
                         </button>
