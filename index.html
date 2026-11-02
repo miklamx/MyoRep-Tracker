@@ -100,10 +100,24 @@
       const [activationReps, setActivationReps] = useState(12);
       const [miniSets, setMiniSets] = useState([]);
       const [selectedReps, setSelectedReps] = useState(null); // Explicit rep choice prior to rest
+      const [manualReps, setManualReps] = useState('');
       const [restTimer, setRestTimer] = useState(0);
       const [isResting, setIsResting] = useState(false);
       const [isCompleted, setIsCompleted] = useState(false);
       const [workoutLog, setWorkoutLog] = useState([]);
+
+      const pendingRepCount =
+        selectedReps !== null
+          ? selectedReps
+          : manualReps === ''
+            ? null
+            : Number(manualReps);
+
+      const hasValidPendingRep =
+        pendingRepCount !== null &&
+        Number.isFinite(pendingRepCount) &&
+        pendingRepCount >= 1 &&
+        pendingRepCount <= 5;
 
       // 5-Breath Rest Timer Effect
       useEffect(() => {
@@ -129,16 +143,26 @@
       const handlePickReps = (reps) => {
         if (isResting || isCompleted) return;
         setSelectedReps(reps);
+        setManualReps('');
+      };
+
+      const handleManualRepChange = (value) => {
+        if (isResting || isCompleted) return;
+        const sanitized = value.replace(/[^0-9]/g, '');
+        setManualReps(sanitized);
+        setSelectedReps(null);
       };
 
       // 2. User confirms choice to lock entry and trigger next state
       const handleConfirmAndStartRest = () => {
-        if (selectedReps === null || isResting || isCompleted) return;
+        const repsLogged = pendingRepCount;
 
-        const repsLogged = selectedReps;
+        if (repsLogged === null || !Number.isFinite(repsLogged) || repsLogged < 1 || repsLogged > 5 || isResting || isCompleted) return;
+
         const newMiniSets = [...miniSets, repsLogged];
         setMiniSets(newMiniSets);
-        setSelectedReps(null); // Reset selection state
+        setSelectedReps(null);
+        setManualReps('');
 
         // Auto-Regulation Cutoff check (< 3 reps or max 5 mini-sets)
         if (repsLogged < 3 || newMiniSets.length >= 5) {
@@ -178,6 +202,7 @@
       const resetSession = () => {
         setMiniSets([]);
         setSelectedReps(null);
+        setManualReps('');
         setActivationReps(12);
         setIsResting(false);
         setRestTimer(0);
@@ -328,7 +353,7 @@
                 {!isCompleted && !isResting && (
                   <div className="space-y-3 pt-2 border-t border-slate-800">
                     <label className="block text-xs text-slate-300 font-bold">
-                      Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
+                      Step 1: Select or enter reps completed on Mini-Set #{miniSets.length + 1}:
                     </label>
                     
                     {/* Interactive Rep Selection Buttons */}
@@ -348,13 +373,28 @@
                       ))}
                     </div>
 
+                    <div className="pt-1">
+                      <label className="block text-[10px] uppercase tracking-wider text-slate-400 mb-2">
+                        Or enter custom reps (1-5)
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="5"
+                        value={manualReps}
+                        onChange={(e) => handleManualRepChange(e.target.value)}
+                        placeholder="1-5"
+                        className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-bold text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+
                     {/* Step 2: Explicit Confirmation Action */}
-                    {selectedReps !== null && (
+                    {hasValidPendingRep && (
                       <button
                         onClick={handleConfirmAndStartRest}
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/50 mt-3"
+                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/40"
                       >
-                        Step 2: Confirm {selectedReps} Reps & Start 5-Breath Rest ➔
+                        Step 2: Confirm {pendingRepCount} Reps & Start 5-Breath Rest ➔
                       </button>
                     )}
                   </div>
