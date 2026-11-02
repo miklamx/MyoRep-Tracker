@@ -69,7 +69,7 @@
       }
     ];
 
-    // Web Audio Synthesizer for Rest Cues
+    // Audio Chimes for Hands-Free Rest Signals
     const playChime = (freq = 440, type = 'sine', duration = 0.15) => {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -99,13 +99,13 @@
       const [settingLevel, setSettingLevel] = useState('Level 5');
       const [activationReps, setActivationReps] = useState(12);
       const [miniSets, setMiniSets] = useState([]);
-      const [pendingReps, setPendingReps] = useState(null); // Active rep selection
+      const [selectedReps, setSelectedReps] = useState(null); // Explicit rep choice prior to rest
       const [restTimer, setRestTimer] = useState(0);
       const [isResting, setIsResting] = useState(false);
       const [isCompleted, setIsCompleted] = useState(false);
       const [workoutLog, setWorkoutLog] = useState([]);
 
-      // 5-Breath (15s) Timer Effect
+      // 5-Breath Rest Timer Effect
       useEffect(() => {
         let interval = null;
         if (isResting && restTimer > 0) {
@@ -113,40 +113,40 @@
             setRestTimer((prev) => {
               const next = prev - 1;
               if (next > 0 && next % 3 === 0) {
-                playChime(350, 'sine', 0.1); // Breath chime
+                playChime(350, 'sine', 0.1); // Soft breath tick
               }
               return next;
             });
           }, 1000);
         } else if (restTimer === 0 && isResting) {
           setIsResting(false);
-          playGoChime();
+          playGoChime(); // Double chime when rest phase completes
         }
         return () => clearInterval(interval);
       }, [isResting, restTimer]);
 
-      // Direct selection on rep tap
-      const handleSelectReps = (reps) => {
+      // 1. User picks reps (Highlights UI without starting countdown)
+      const handlePickReps = (reps) => {
         if (isResting || isCompleted) return;
-        setPendingReps(reps);
+        setSelectedReps(reps);
       };
 
-      // Confirm reps & advance State Machine
-      const handleConfirmMiniSet = () => {
-        if (pendingReps === null || isResting || isCompleted) return;
+      // 2. User confirms choice to lock entry and trigger next state
+      const handleConfirmAndStartRest = () => {
+        if (selectedReps === null || isResting || isCompleted) return;
 
-        const reps = pendingReps;
-        const updatedSets = [...miniSets, reps];
-        setMiniSets(updatedSets);
-        setPendingReps(null);
+        const repsLogged = selectedReps;
+        const newMiniSets = [...miniSets, repsLogged];
+        setMiniSets(newMiniSets);
+        setSelectedReps(null); // Reset selection state
 
-        // Auto-Regulation Cutoff check (< 3 reps or 5 mini-sets reached)
-        if (reps < 3 || updatedSets.length >= 5) {
+        // Auto-Regulation Cutoff check (< 3 reps or max 5 mini-sets)
+        if (repsLogged < 3 || newMiniSets.length >= 5) {
           setIsCompleted(true);
           setIsResting(false);
           playGoChime();
         } else {
-          // Launch 5-breath rest interval
+          // Trigger 15-second (5-breath) rest timer
           setRestTimer(15);
           setIsResting(true);
           playChime(440, 'sine', 0.15);
@@ -177,7 +177,7 @@
 
       const resetSession = () => {
         setMiniSets([]);
-        setPendingReps(null);
+        setSelectedReps(null);
         setActivationReps(12);
         setIsResting(false);
         setRestTimer(0);
@@ -219,7 +219,7 @@
 
           {activeTab === 'workout' ? (
             <div className="space-y-6">
-              {/* Exercise Selection */}
+              {/* Exercise Selector */}
               <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                 <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
                 <select 
@@ -267,12 +267,12 @@
                       onChange={(e) => setActivationReps(Number(e.target.value))}
                       className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white"
                     />
-                    <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before cluster mini-sets.</span>
+                    <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
                   </div>
                 </div>
               </div>
 
-              {/* Rest Pause Visual Pacer */}
+              {/* Rest Pause Visual Pacer Banner */}
               {isResting && (
                 <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                   <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -290,7 +290,7 @@
                   </div>
 
                   <div className="flex items-center justify-between pt-1">
-                    <span className="text-xs text-slate-400">Resting... prepare for next set.</span>
+                    <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
                     <button 
                       onClick={handleSkipRest}
                       className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
@@ -301,11 +301,11 @@
                 </div>
               )}
 
-              {/* Cluster Mini-Sets Panel */}
+              {/* Cluster Mini-Sets Control Panel */}
               <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                 <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
                 
-                {/* Mini-Set Slot Grid */}
+                {/* Visual Slots Grid */}
                 <div className="grid grid-cols-5 gap-2 mb-4">
                   {[0, 1, 2, 3, 4].map((idx) => (
                     <div 
@@ -324,20 +324,21 @@
                   ))}
                 </div>
 
-                {/* Unlocked Rep Selector Interface */}
+                {/* Rep Logging Controls */}
                 {!isCompleted && !isResting && (
                   <div className="space-y-3 pt-2 border-t border-slate-800">
                     <label className="block text-xs text-slate-300 font-bold">
-                      Select Reps Completed on Mini-Set #{miniSets.length + 1}:
+                      Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
                     </label>
                     
+                    {/* Interactive Rep Selection Buttons */}
                     <div className="grid grid-cols-5 gap-2">
                       {[5, 4, 3, 2, 1].map((reps) => (
                         <button 
                           key={reps}
-                          onClick={() => handleSelectReps(reps)}
+                          onClick={() => handlePickReps(reps)}
                           className={`py-3.5 font-black text-base rounded-lg transition-all border ${
-                            pendingReps === reps
+                            selectedReps === reps
                               ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-md scale-105'
                               : 'bg-slate-800 hover:bg-slate-700 text-slate-100 border-slate-700 active:scale-95'
                           }`}
@@ -347,19 +348,19 @@
                       ))}
                     </div>
 
-                    {/* Dedicated Confirm Action */}
-                    {pendingReps !== null && (
+                    {/* Step 2: Explicit Confirmation Action */}
+                    {selectedReps !== null && (
                       <button
-                        onClick={handleConfirmMiniSet}
+                        onClick={handleConfirmAndStartRest}
                         className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/50 mt-3"
                       >
-                        Confirm {pendingReps} Reps & Start 5-Breath Rest ➔
+                        Step 2: Confirm {selectedReps} Reps & Start 5-Breath Rest ➔
                       </button>
                     )}
                   </div>
                 )}
 
-                {/* Exercise Completion State */}
+                {/* Auto-Regulation Exercise Complete Banner */}
                 {isCompleted && (
                   <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
                     <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
@@ -377,7 +378,7 @@
               </div>
             </div>
           ) : (
-            /* History Tab */
+            /* Workout History Log Tab */
             <div className="space-y-3">
               {workoutLog.length === 0 ? (
                 <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
