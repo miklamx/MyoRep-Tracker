@@ -30,22 +30,121 @@
       ];
 
       const EXERCISES = [
+        // --- CHEST MOVEMENTS FROM VIDEO ---
         {
-          id: 'tg-crossover',
-          name: 'Lying Cable Crossover / Fly',
+          id: 'tg-chest-press',
+          name: 'Seated Chest Press',
           category: 'CHEST',
           equipment: 'Total Gym',
-          description: 'Lie supine on glideboard. Sweep hands over chest, driving inner elbows together.',
+          description: 'Seated facing away, press handles straight forward keeping chest up.',
           defaultLevel: 'Level 5'
         },
         {
-          id: 'tg-chest-press',
-          name: 'Seated / Supine Chest Press',
+          id: 'tg-incline-chest-press',
+          name: 'Incline Chest Press (Kneeling)',
           category: 'CHEST',
           equipment: 'Total Gym',
-          description: 'Press handles forward evenly, focusing on squeezing lower pectorals.',
+          description: 'Kneel facing away, press handles upward at an angle toward upper chest.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-chest-flys',
+          name: 'Seated Chest Flys',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Seated facing away, sweep arms forward in wide arc bringing hands together.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-incline-chest-flys',
+          name: 'Incline Chest Flys (Kneeling)',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Kneel facing away, sweep handles upward and inward across upper chest.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-pec-raises-kneeling',
+          name: 'Pec Raises (Kneeling)',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Kneeling position, scoop handles upward focusing on lower chest contraction.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-alt-pec-raises',
+          name: 'Alternating Pec Raises (Kneeling)',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Kneeling position, scoop handles upward one arm at a time.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-single-arm-chest-fly',
+          name: 'Single Arm Chest Fly',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Kneel or sit sideways/angled, perform unilateral fly to maximize squeeze.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-lying-pullovers',
+          name: 'Lying Arm Pullover',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Lie supine, pull handles from overhead down to waist line.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-single-arm-press',
+          name: 'Single Arm Chest Press',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Unilateral press from kneeling position to drive core and chest focus.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'tg-push-press',
+          name: 'Squat Stand Push Press',
+          category: 'CHEST',
+          equipment: 'Total Gym (Squat Stand)',
+          description: 'Kneel facing squat stand, press off stand to lift glideboard.',
           defaultLevel: 'Level 6'
         },
+        {
+          id: 'tg-power-push-press',
+          name: 'Power Push Press (Explosive)',
+          category: 'CHEST',
+          equipment: 'Total Gym (Squat Stand)',
+          description: 'Explosive push off squat stand with hands leaving board momentarily.',
+          defaultLevel: 'Level 6'
+        },
+        {
+          id: 'tg-decline-pushup',
+          name: 'Decline Push-Up (Wing Bar)',
+          category: 'CHEST',
+          equipment: 'Total Gym (Wing Bar)',
+          description: 'Feet on glideboard, hands on wing bar attachment for deep decline press.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-jackknife-pushup',
+          name: 'Jackknife Push-Up',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Feet on glideboard, hands on floor, tuck knees as you perform push-up.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-alt-deep-pushup',
+          name: 'Alternating Deep Push-Up',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'One hand on floor, one on glideboard bottom, alternating depth.',
+          defaultLevel: 'Level 4'
+        },
+
+        // --- BACK ---
         {
           id: 'tg-row',
           name: 'Seated Low Cable Row',
@@ -55,13 +154,15 @@
           defaultLevel: 'Level 5'
         },
         {
-          id: 'tg-pullover',
-          name: 'Supine Arm Pullover',
+          id: 'tg-pullover-back',
+          name: 'Lat Pullover',
           category: 'BACK',
           equipment: 'Total Gym',
-          description: 'Lie on back, pull arms from overhead to hips in controlled arc.',
+          description: 'Lie on back, pull arms from overhead to hips isolating lats.',
           defaultLevel: 'Level 5'
         },
+
+        // --- LEGS ---
         {
           id: 'tg-squat',
           name: 'Single-Leg Squat (Pistol Press)',
@@ -75,15 +176,17 @@
           name: 'Foot-Anchored Band Deadlift',
           category: 'LEGS',
           equipment: 'Resistance Bands',
-          description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward at top.',
+          description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward.',
           defaultLevel: 'Level 1'
         },
+
+        // --- SHOULDERS ---
         {
           id: 'tg-overhead-press',
           name: 'Seated Overhead Press',
           category: 'SHOULDERS',
           equipment: 'Total Gym',
-          description: 'Sit facing away, press upward while keeping core tight and back supported.',
+          description: 'Sit facing away, press upward while keeping core tight.',
           defaultLevel: 'Level 4'
         },
         {
@@ -91,9 +194,11 @@
           name: 'Cable Lateral Raise',
           category: 'SHOULDERS',
           equipment: 'Total Gym',
-          description: 'Sit sideways on glideboard, pull cable across body to isolate lateral deltoid.',
+          description: 'Sit sideways on glideboard, pull cable across body to isolate lateral head.',
           defaultLevel: 'Level 3'
         },
+
+        // --- ARMS ---
         {
           id: 'tg-biceps-curl',
           name: 'Seated Biceps Curl',
@@ -150,13 +255,11 @@
       function App() {
         const [activeTab, setActiveTab] = useState('workout');
         
-        // Hierarchy States
         const [selectedMuscle, setSelectedMuscle] = useState('ALL');
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
         const [tgLevel, setTgLevel] = useState(5);
         const [selectedBand, setSelectedBand] = useState('none');
 
-        // Workout Progress States
         const [activationReps, setActivationReps] = useState(12);
         const [activationDone, setActivationDone] = useState(false);
         const [miniSets, setMiniSets] = useState([]);
@@ -168,7 +271,6 @@
 
         const timerRef = useRef(null);
 
-        // Filtered exercises based on muscle group selection
         const filteredExercises = selectedMuscle === 'ALL' 
           ? EXERCISES 
           : EXERCISES.filter(ex => ex.category === selectedMuscle);
@@ -311,7 +413,6 @@
 
         return (
           <div className="max-w-md mx-auto p-4 pb-20">
-            {/* Header */}
             <header className="mb-6 border-b border-slate-800 pb-4">
               <div className="flex justify-between items-center">
                 <div>
@@ -324,7 +425,6 @@
               </div>
             </header>
 
-            {/* Navigation Tabs */}
             <div className="flex gap-2 mb-6 bg-slate-900 p-1 rounded-lg border border-slate-800">
               <button
                 type="button"
@@ -345,7 +445,7 @@
             {activeTab === 'workout' ? (
               <div className="space-y-6">
                 
-                {/* Step 1: Muscle Group Selection Pills */}
+                {/* Step 1: Muscle Group Selection */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Step 1: Select Target Muscle Group
@@ -371,7 +471,7 @@
                 {/* Step 2: Exercise Movement Selector */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
-                    Step 2: Choose Exercise Movement
+                    Step 2: Choose Exercise Movement ({filteredExercises.length} Available)
                   </label>
                   <select
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500"
@@ -380,7 +480,7 @@
                   >
                     {filteredExercises.map((item) => (
                       <option key={item.id} value={item.id}>
-                        {item.name} [{item.category}]
+                        {item.name}
                       </option>
                     ))}
                   </select>
@@ -389,13 +489,12 @@
                   </p>
                 </div>
 
-                {/* Step 3: Split Equipment Configuration */}
+                {/* Step 3: Equipment Configuration */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-4">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Step 3: Configure Resistance Load
                   </label>
 
-                  {/* Total Gym Incline Level Selector */}
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-xs font-bold text-slate-300">Total Gym Incline Level:</span>
@@ -412,7 +511,6 @@
                     </select>
                   </div>
 
-                  {/* Serious Steel Band Selector */}
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-xs font-bold text-slate-300">Serious Steel Band Overlay:</span>
@@ -429,7 +527,6 @@
                     </select>
                   </div>
 
-                  {/* Activation Set Setup */}
                   <div className="border-t border-slate-800 pt-3">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
@@ -460,7 +557,7 @@
                   </div>
                 </div>
 
-                {/* Visual Breath Pacer */}
+                {/* Rest Timer */}
                 {isResting && (
                   <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                     <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -486,13 +583,12 @@
                   </div>
                 )}
 
-                {/* Step 4: Cluster Mini-Sets Panel */}
+                {/* Step 4: Mini-Sets */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">
                     Step 4: Cluster Mini-Sets (3–5 Reps)
                   </h3>
 
-                  {/* Mini-Set Progress Grid */}
                   <div className="grid grid-cols-5 gap-2 mb-4">
                     {[0, 1, 2, 3, 4].map((idx) => (
                       <div
@@ -517,7 +613,6 @@
                     </p>
                   )}
 
-                  {/* Card Selection UI */}
                   {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
                       <label className="block text-xs text-slate-300 font-bold mb-2">
@@ -566,7 +661,6 @@
                         })}
                       </div>
 
-                      {/* Confirmation Action Button */}
                       {selectedReps !== null ? (
                         <button
                           type="button"
@@ -601,7 +695,6 @@
                 </div>
               </div>
             ) : (
-              /* History Log Tab */
               <div className="space-y-3">
                 {history.length === 0 ? (
                   <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
