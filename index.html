@@ -30,14 +30,16 @@
       ];
 
       const EXERCISES = [
-        // --- CHEST MOVEMENTS FROM VIDEO ---
+        // --- CHEST MOVEMENTS WITH TIMESTAMPED YOUTUBE COACHING ---
         {
           id: 'tg-chest-press',
           name: 'Seated Chest Press',
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Seated facing away, press handles straight forward keeping chest up.',
-          defaultLevel: 'Level 5'
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=0s',
+          timestampLabel: '0:00'
         },
         {
           id: 'tg-incline-chest-press',
@@ -45,7 +47,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Kneel facing away, press handles upward at an angle toward upper chest.',
-          defaultLevel: 'Level 5'
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=58s',
+          timestampLabel: '0:58'
         },
         {
           id: 'tg-chest-flys',
@@ -53,7 +57,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Seated facing away, sweep arms forward in wide arc bringing hands together.',
-          defaultLevel: 'Level 5'
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=88s',
+          timestampLabel: '1:28'
         },
         {
           id: 'tg-incline-chest-flys',
@@ -61,7 +67,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Kneel facing away, sweep handles upward and inward across upper chest.',
-          defaultLevel: 'Level 4'
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=118s',
+          timestampLabel: '1:58'
         },
         {
           id: 'tg-pec-raises-kneeling',
@@ -69,7 +77,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Kneeling position, scoop handles upward focusing on lower chest contraction.',
-          defaultLevel: 'Level 4'
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=148s',
+          timestampLabel: '2:28'
         },
         {
           id: 'tg-alt-pec-raises',
@@ -77,7 +87,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Kneeling position, scoop handles upward one arm at a time.',
-          defaultLevel: 'Level 4'
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=178s',
+          timestampLabel: '2:58'
         },
         {
           id: 'tg-single-arm-chest-fly',
@@ -85,7 +97,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Kneel or sit sideways/angled, perform unilateral fly to maximize squeeze.',
-          defaultLevel: 'Level 4'
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=208s',
+          timestampLabel: '3:28'
         },
         {
           id: 'tg-lying-pullovers',
@@ -93,55 +107,9 @@
           category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Lie supine, pull handles from overhead down to waist line.',
-          defaultLevel: 'Level 5'
-        },
-        {
-          id: 'tg-single-arm-press',
-          name: 'Single Arm Chest Press',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Unilateral press from kneeling position to drive core and chest focus.',
-          defaultLevel: 'Level 5'
-        },
-        {
-          id: 'tg-push-press',
-          name: 'Squat Stand Push Press',
-          category: 'CHEST',
-          equipment: 'Total Gym (Squat Stand)',
-          description: 'Kneel facing squat stand, press off stand to lift glideboard.',
-          defaultLevel: 'Level 6'
-        },
-        {
-          id: 'tg-power-push-press',
-          name: 'Power Push Press (Explosive)',
-          category: 'CHEST',
-          equipment: 'Total Gym (Squat Stand)',
-          description: 'Explosive push off squat stand with hands leaving board momentarily.',
-          defaultLevel: 'Level 6'
-        },
-        {
-          id: 'tg-decline-pushup',
-          name: 'Decline Push-Up (Wing Bar)',
-          category: 'CHEST',
-          equipment: 'Total Gym (Wing Bar)',
-          description: 'Feet on glideboard, hands on wing bar attachment for deep decline press.',
-          defaultLevel: 'Level 4'
-        },
-        {
-          id: 'tg-jackknife-pushup',
-          name: 'Jackknife Push-Up',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Feet on glideboard, hands on floor, tuck knees as you perform push-up.',
-          defaultLevel: 'Level 4'
-        },
-        {
-          id: 'tg-alt-deep-pushup',
-          name: 'Alternating Deep Push-Up',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'One hand on floor, one on glideboard bottom, alternating depth.',
-          defaultLevel: 'Level 4'
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=217s',
+          timestampLabel: '3:37'
         },
 
         // --- BACK ---
@@ -468,7 +436,7 @@
                   </div>
                 </div>
 
-                {/* Step 2: Exercise Movement Selector */}
+                {/* Step 2: Exercise Movement Selector + Timestamped Video Link */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
                     Step 2: Choose Exercise Movement ({filteredExercises.length} Available)
@@ -484,9 +452,27 @@
                       </option>
                     ))}
                   </select>
-                  <p className="text-xs text-slate-400 mt-2 italic bg-slate-950 p-2 rounded border border-slate-800">
-                    💡 {exercise.description}
-                  </p>
+
+                  <div className="mt-3 bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
+                    <p className="text-xs text-slate-300 italic">
+                      💡 {exercise.description}
+                    </p>
+
+                    {/* Timestamped Video Link Button */}
+                    {exercise.videoUrl && (
+                      <a
+                        href={exercise.videoUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/60 hover:bg-sky-900/60 px-2.5 py-1.5 rounded border border-sky-800 transition-colors"
+                      >
+                        <svg className="w-3.5 h-3.5 fill-current text-rose-500" viewBox="0 0 24 24">
+                          <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                        </svg>
+                        <span>Watch Video Form Guide ({exercise.timestampLabel}) ➔</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 {/* Step 3: Equipment Configuration */}
