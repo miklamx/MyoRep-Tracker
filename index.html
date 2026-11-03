@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen">
+  <body class="bg-slate-950 text-slate-100 min-h-screen select-none">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -104,7 +104,7 @@
         const [activationReps, setActivationReps] = useState(12);
         const [activationDone, setActivationDone] = useState(false);
         const [miniSets, setMiniSets] = useState([]);
-        const [selectedReps, setSelectedReps] = useState(5); // Default to 5 reps
+        const [selectedReps, setSelectedReps] = useState(null); // Unset until clicked
         const [restTimer, setRestTimer] = useState(0);
         const [isResting, setIsResting] = useState(false);
         const [isCompleted, setIsCompleted] = useState(false);
@@ -166,7 +166,7 @@
 
         const resetSession = () => {
           setMiniSets([]);
-          setSelectedReps(5);
+          setSelectedReps(null);
           setActivationReps(12);
           setActivationDone(false);
           setIsResting(false);
@@ -189,13 +189,18 @@
           playChime(440, 'sine', 0.15);
         };
 
-        const handleConfirmAndStartRest = () => {
+        const handleSelectCard = (val) => {
           if (isResting || isCompleted || !activationDone) return;
+          setSelectedReps(val);
+        };
 
-          const repsToRecord = Number(selectedReps);
+        const handleConfirmAndStartRest = () => {
+          if (selectedReps === null || isResting || isCompleted) return;
+
+          const repsToRecord = selectedReps;
           const nextMiniSets = [...miniSets, repsToRecord];
           setMiniSets(nextMiniSets);
-          setSelectedReps(5); // Reset dropdown to 5 for next set
+          setSelectedReps(null); // Clear selection state for next mini-set
 
           if (repsToRecord < 3 || nextMiniSets.length >= 5) {
             setIsCompleted(true);
@@ -267,6 +272,7 @@
 
             {activeTab === 'workout' ? (
               <div className="space-y-6">
+                {/* Movement Selector */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
                   <select
@@ -283,6 +289,7 @@
                   </p>
                 </div>
 
+                {/* Setup & Activation */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <div className="flex justify-between items-center mb-3">
                     <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
@@ -326,6 +333,7 @@
                   </div>
                 </div>
 
+                {/* Visual Breath Pacer */}
                 {isResting && (
                   <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                     <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -351,9 +359,11 @@
                   </div>
                 )}
 
+                {/* Cluster Mini-Sets Panel */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
 
+                  {/* Progress Indicators */}
                   <div className="grid grid-cols-5 gap-2 mb-4">
                     {[0, 1, 2, 3, 4].map((idx) => (
                       <div
@@ -378,32 +388,72 @@
                     </p>
                   )}
 
-                  {/* Native Dropdown Select UX Option 1 */}
+                  {/* Option 2: Visual Selection Cards */}
                   {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
-                      <label className="block text-xs text-slate-300 font-bold">
+                      <label className="block text-xs text-slate-300 font-bold mb-2">
                         Select Reps Completed for Mini-Set #{miniSets.length + 1}:
                       </label>
 
-                      <select
-                        value={selectedReps}
-                        onChange={(e) => setSelectedReps(Number(e.target.value))}
-                        className="w-full bg-slate-950 border-2 border-emerald-500/60 rounded-xl p-3 text-lg font-black text-center text-emerald-400 focus:outline-none focus:border-emerald-400"
-                      >
-                        <option value={5}>5 Reps (Target)</option>
-                        <option value={4}>4 Reps</option>
-                        <option value={3}>3 Reps</option>
-                        <option value={2}>2 Reps (Trigger Cutoff)</option>
-                        <option value={1}>1 Rep (Trigger Cutoff)</option>
-                      </select>
+                      {/* Stack of Cards */}
+                      <div className="space-y-2">
+                        {[
+                          { reps: 5, label: '5 Reps (Target Goal)' },
+                          { reps: 4, label: '4 Reps' },
+                          { reps: 3, label: '3 Reps' },
+                          { reps: 2, label: '2 Reps (Triggers Exercise Cutoff)' },
+                          { reps: 1, label: '1 Rep (Triggers Exercise Cutoff)' }
+                        ].map(({ reps, label }) => {
+                          const isSelected = selectedReps === reps;
+                          return (
+                            <div
+                              key={reps}
+                              onClick={() => handleSelectCard(reps)}
+                              className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
+                                isSelected
+                                  ? 'bg-emerald-950/80 border-emerald-400 text-emerald-200 ring-2 ring-emerald-500/50'
+                                  : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-sm ${
+                                    isSelected
+                                      ? 'bg-emerald-500 text-slate-950'
+                                      : 'bg-slate-800 text-slate-400'
+                                  }`}
+                                >
+                                  {reps}
+                                </div>
+                                <span className="text-xs font-bold">{label}</span>
+                              </div>
 
-                      <button
-                        type="button"
-                        onClick={handleConfirmAndStartRest}
-                        className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30"
-                      >
-                        Log {selectedReps} Reps & Start 5-Breath Rest ➔
-                      </button>
+                              {isSelected && (
+                                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider bg-emerald-900/60 px-2.5 py-1 rounded border border-emerald-700">
+                                  ✓ Selected
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      {/* Confirmation Action Button */}
+                      {selectedReps !== null ? (
+                        <button
+                          type="button"
+                          onClick={handleConfirmAndStartRest}
+                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30 mt-4"
+                        >
+                          {selectedReps >= 3
+                            ? `Confirm ${selectedReps} Reps & Start 5-Breath Rest ➔`
+                            : `Confirm ${selectedReps} Reps & Complete Exercise ➔`}
+                        </button>
+                      ) : (
+                        <p className="text-xs text-slate-500 text-center italic py-1">
+                          Tap a card above to select your completed reps.
+                        </p>
+                      )}
                     </div>
                   )}
 
