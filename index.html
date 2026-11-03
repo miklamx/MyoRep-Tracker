@@ -17,7 +17,7 @@
 
       const STORAGE_KEY = 'myorep-history';
 
-      const MUSCLE_GROUPS = ['ALL', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
+      const MUSCLE_GROUPS = ['ALL', 'HIP MOBILITY', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
 
       const BAND_OPTIONS = [
         { id: 'none', label: 'None (Total Gym Only)' },
@@ -30,7 +30,159 @@
       ];
 
       const EXERCISES = [
-        // --- CHEST (Timestamped Coaching) ---
+        // --- HIP MOBILITY & RECOVERY MOVEMENTS ---
+        {
+          id: 'mob-glute-bridge-squat',
+          name: 'Glute Bridge Squat',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Press hips into bridge while executing smooth squat motion for glute/hamstring activation.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtu.be/WdEY2WYKMpw?t=0s',
+          timestampLabel: '0:03'
+        },
+        {
+          id: 'mob-side-plank-hip-lift',
+          name: 'Supported Side Plank Hip Lift',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Side-lying position on glideboard, lift hips to recruit underneath hip abductors.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtu.be/WdEY2WYKMpw?t=67s',
+          timestampLabel: '1:07'
+        },
+        {
+          id: 'mob-supported-lunge-stab',
+          name: 'Supported Lunge & Hip Stabilization',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Foot on squat stand, slide board back in controlled lunge for pelvic alignment.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/WdEY2WYKMpw?t=97s',
+          timestampLabel: '1:37'
+        },
+        {
+          id: 'mob-rail-hip-flexor-lunge',
+          name: 'Rail-Supported Hip Flexor Lunge Stretch',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Step foot parallel to lap bar/wing, let hips drop through rails for deep flexor release.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/fIXb9_5mLM8?t=10s',
+          timestampLabel: '0:10'
+        },
+        {
+          id: 'mob-quad-hip-stretch',
+          name: 'Quadriceps & Hip Flexor Decompression Stretch',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Pull board up rails, reach back for ankle/foot, slowly lower into deep quad stretch.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/fIXb9_5mLM8?t=23s',
+          timestampLabel: '0:23'
+        },
+        {
+          id: 'mob-squat-stand-lunge-stretch',
+          name: 'Squat Stand Lunge Stretch',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Lunge facing squat stand, holding static stretch for 30–60 seconds to open hip flexors.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/fIXb9_5mLM8?t=46s',
+          timestampLabel: '0:46'
+        },
+        {
+          id: 'mob-glute-bridge-rollout',
+          name: 'Elevated Glute Bridge Hamstring Rollout',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Feet on squat stand, hold hips in elevated bridge while extending and curling glideboard.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtube.com/shorts/-kW5vfrzL9E?t=1s',
+          timestampLabel: '0:01'
+        },
+        {
+          id: 'mob-single-leg-rollout',
+          name: 'Single-Leg Elevated Glute Bridge Rollout',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Unilateral elevated glute bridge, extending free leg upward while rolling board.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtube.com/shorts/-kW5vfrzL9E?t=9s',
+          timestampLabel: '0:09'
+        },
+        {
+          id: 'mob-pelvic-c-curve',
+          name: 'Pelvic Tilt C-Curve Mobility',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Seated at base of board, gently tilt pelvis forward and back to release QL and low back.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/0zCdVpYby-M?t=30s',
+          timestampLabel: '0:30'
+        },
+        {
+          id: 'mob-spine-down-dog',
+          name: 'Prone Spine Extension into Down-Dog Decompression',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Hands on board, transition from spinal extension into high down-dog hamstring stretch.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/0zCdVpYby-M?t=280s',
+          timestampLabel: '4:40'
+        },
+        {
+          id: 'mob-glideboard-pigeon',
+          name: 'Glideboard Pigeon Pose Stretch',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Cross leg across board, press glideboard up to open glutes and deep hip rotators.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/0zCdVpYby-M?t=323s',
+          timestampLabel: '5:23'
+        },
+        {
+          id: 'mob-prone-hip-opener',
+          name: 'Prone Hip Opener Lunge & Quad Stretch',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Step large foot forward beside base, sink into board to open deep hip capsule.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/0zCdVpYby-M?t=405s',
+          timestampLabel: '6:45'
+        },
+        {
+          id: 'mob-3leg-dog-climber',
+          name: '3-Legged Dog to Mountain Climber Flow',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Elevated down-dog leg lift driving knee under torso to mobilize hips & core.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtu.be/0zCdVpYby-M?t=525s',
+          timestampLabel: '8:45'
+        },
+        {
+          id: 'mob-quad-supported-lunge',
+          name: 'Glideboard Quad-Supported Lunge',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Kneel with one foot on board, drive through glute/quad without wrist or back strain.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/MS4Y80oVbyg?t=435s',
+          timestampLabel: '7:15'
+        },
+        {
+          id: 'mob-spine-decompression-ql',
+          name: 'Decompression Spinal Stretch & QL Reach',
+          category: 'HIP MOBILITY',
+          equipment: 'Total Gym',
+          description: 'Lie supine inverted on board, reach overhead to decompress spine and stretch QL.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MS4Y80oVbyg?t=661s',
+          timestampLabel: '11:01'
+        },
+
+        // --- CHEST ---
         {
           id: 'tg-chest-press',
           name: 'Seated Chest Press',
@@ -61,58 +213,8 @@
           videoUrl: 'https://youtu.be/UlmA1srwb8o?t=88s',
           timestampLabel: '1:28'
         },
-        {
-          id: 'tg-incline-chest-flys',
-          name: 'Incline Chest Flys (Kneeling)',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Kneel facing away, sweep handles upward and inward across upper chest.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=118s',
-          timestampLabel: '1:58'
-        },
-        {
-          id: 'tg-pec-raises-kneeling',
-          name: 'Pec Raises (Kneeling)',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Kneeling position, scoop handles upward focusing on lower chest contraction.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=148s',
-          timestampLabel: '2:28'
-        },
-        {
-          id: 'tg-alt-pec-raises',
-          name: 'Alternating Pec Raises (Kneeling)',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Kneeling position, scoop handles upward one arm at a time.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=178s',
-          timestampLabel: '2:58'
-        },
-        {
-          id: 'tg-single-arm-chest-fly',
-          name: 'Single Arm Chest Fly',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Kneel or sit sideways/angled, perform unilateral fly to maximize squeeze.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=208s',
-          timestampLabel: '3:28'
-        },
-        {
-          id: 'tg-lying-pullovers',
-          name: 'Lying Arm Pullover',
-          category: 'CHEST',
-          equipment: 'Total Gym',
-          description: 'Lie supine, pull handles from overhead down to waist line.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/UlmA1srwb8o?t=217s',
-          timestampLabel: '3:37'
-        },
 
-        // --- LEGS (Timestamped Coaching) ---
+        // --- LEGS ---
         {
           id: 'tg-side-lying-squat',
           name: 'Single Leg Squat (Side-Lying)',
@@ -133,62 +235,6 @@
           videoUrl: 'https://youtu.be/bLrO4htXz6U?t=241s',
           timestampLabel: '4:01'
         },
-        {
-          id: 'tg-jump-squats',
-          name: 'Decompression Jump Squats',
-          category: 'LEGS',
-          equipment: 'Total Gym',
-          description: 'Explosive jump squats on board removing spinal compression.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=293s',
-          timestampLabel: '4:53'
-        },
-        {
-          id: 'tg-cable-glute-kickback',
-          name: 'Cable Glute Kickbacks (Foot/Ankle Strap)',
-          category: 'LEGS',
-          equipment: 'Total Gym',
-          description: 'Foot in handle or ankle strap, extend leg back against cable tension.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=340s',
-          timestampLabel: '5:40'
-        },
-        {
-          id: 'tg-seated-hamstring-curl',
-          name: 'Seated Knee Flexion Hamstring Curl',
-          category: 'LEGS',
-          equipment: 'Total Gym',
-          description: 'Sit facing tower with ankle cuffs, flex knees pulling glideboard up.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=366s',
-          timestampLabel: '6:06'
-        },
-        {
-          id: 'tg-supine-hamstring-curl',
-          name: 'Supine Lying Hamstring Curl',
-          category: 'LEGS',
-          equipment: 'Total Gym',
-          description: 'Lie back on board with ankle cuffs, pull heels to glutes in diagonal plane.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=411s',
-          timestampLabel: '6:51'
-        },
-        {
-          id: 'tg-squat-pistol',
-          name: 'Single-Leg Squat (Pistol Press)',
-          category: 'LEGS',
-          equipment: 'Total Gym',
-          description: 'Drive through mid-foot/heel on squat stand. Knee tracks over second toe.',
-          defaultLevel: 'Level 5'
-        },
-        {
-          id: 'band-deadlift',
-          name: 'Foot-Anchored Band Deadlift',
-          category: 'LEGS',
-          equipment: 'Resistance Bands',
-          description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward.',
-          defaultLevel: 'Level 1'
-        },
 
         // --- BACK ---
         {
@@ -197,14 +243,6 @@
           category: 'BACK',
           equipment: 'Total Gym',
           description: 'Keep shoulder blades depressed into back pockets. Drive elbows back to ribs.',
-          defaultLevel: 'Level 5'
-        },
-        {
-          id: 'tg-pullover-back',
-          name: 'Lat Pullover',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Lie on back, pull arms from overhead to hips isolating lats.',
           defaultLevel: 'Level 5'
         },
 
@@ -217,14 +255,6 @@
           description: 'Sit facing away, press upward while keeping core tight.',
           defaultLevel: 'Level 4'
         },
-        {
-          id: 'tg-lateral-raise',
-          name: 'Cable Lateral Raise',
-          category: 'SHOULDERS',
-          equipment: 'Total Gym',
-          description: 'Sit sideways on glideboard, pull cable across body to isolate lateral head.',
-          defaultLevel: 'Level 3'
-        },
 
         // --- ARMS ---
         {
@@ -233,14 +263,6 @@
           category: 'ARMS',
           equipment: 'Total Gym',
           description: 'Keep upper arms fixed at sides, curl handles smoothly toward shoulders.',
-          defaultLevel: 'Level 4'
-        },
-        {
-          id: 'tg-triceps-ext',
-          name: 'Supine Triceps Extension (Skull Crusher)',
-          category: 'ARMS',
-          equipment: 'Total Gym',
-          description: 'Lie back, keep elbows stationary, extend forearms overhead.',
           defaultLevel: 'Level 4'
         }
       ];
@@ -484,297 +506,3 @@
                         key={group}
                         type="button"
                         onClick={() => handleMuscleChange(group)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                          selectedMuscle === group
-                            ? 'bg-emerald-500 text-slate-950 shadow-md'
-                            : 'bg-slate-950 text-slate-400 border border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        {group}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Step 2: Exercise Movement Selector + Timestamped Video Link */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
-                    Step 2: Choose Exercise Movement ({filteredExercises.length} Available)
-                  </label>
-                  <select
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500"
-                    value={selectedExerciseId}
-                    onChange={handleExerciseChange}
-                  >
-                    {filteredExercises.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <div className="mt-3 bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
-                    <p className="text-xs text-slate-300 italic">
-                      💡 {exercise.description}
-                    </p>
-
-                    {/* Timestamped Video Link Button */}
-                    {exercise.videoUrl && (
-                      <a
-                        href={exercise.videoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/60 hover:bg-sky-900/60 px-2.5 py-1.5 rounded border border-sky-800 transition-colors"
-                      >
-                        <svg className="w-3.5 h-3.5 fill-current text-rose-500" viewBox="0 0 24 24">
-                          <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
-                        </svg>
-                        <span>Watch Video Form Guide ({exercise.timestampLabel}) ➔</span>
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Step 3: Equipment Configuration */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-4">
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
-                    Step 3: Configure Resistance Load
-                  </label>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-bold text-slate-300">Total Gym Incline Level:</span>
-                      <span className="text-xs font-black text-emerald-400">Level {tgLevel}</span>
-                    </div>
-                    <select
-                      value={tgLevel}
-                      onChange={(e) => setTgLevel(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-200"
-                    >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((lvl) => (
-                        <option key={lvl} value={lvl}>Level {lvl} Incline</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-bold text-slate-300">Serious Steel Band Overlay:</span>
-                      <span className="text-xs font-black text-emerald-400">41" Loop Band</span>
-                    </div>
-                    <select
-                      value={selectedBand}
-                      onChange={(e) => setSelectedBand(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-200"
-                    >
-                      {BAND_OPTIONS.map((b) => (
-                        <option key={b.id} value={b.id}>{b.label}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="border-t border-slate-800 pt-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
-                      <span className="text-xs text-slate-400">Target: 12-15 Reps</span>
-                    </div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <input
-                        type="number"
-                        min="1"
-                        max="30"
-                        value={activationReps}
-                        disabled={activationDone}
-                        onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
-                        className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white disabled:opacity-50"
-                      />
-                      <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
-                    </div>
-
-                    {!activationDone && (
-                      <button
-                        type="button"
-                        onClick={handleStartActivationRest}
-                        className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider"
-                      >
-                        Complete Activation & Start 5-Breath Rest ➔
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Rest Timer */}
-                {isResting && (
-                  <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
-                    <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
-                      5-BREATH REST PAUSE
-                    </span>
-                    <div className="relative flex items-center justify-center my-2 h-20">
-                      <div className="w-20 h-20 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
-                      <div className="w-16 h-16 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10">
-                        <span className="text-xl font-black text-emerald-300">{restTimer}s</span>
-                        <span className="text-[9px] text-emerald-400 font-bold uppercase">Breath {currentBreath}/5</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between pt-1">
-                      <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
-                      <button
-                        type="button"
-                        onClick={handleSkipRest}
-                        className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
-                      >
-                        Skip Rest ➔
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Step 4: Mini-Sets */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">
-                    Step 4: Cluster Mini-Sets (3–5 Reps)
-                  </h3>
-
-                  <div className="grid grid-cols-5 gap-2 mb-4">
-                    {[0, 1, 2, 3, 4].map((idx) => (
-                      <div
-                        key={idx}
-                        className={`p-3 rounded-lg border text-center transition-all ${
-                          miniSets[idx] !== undefined
-                            ? miniSets[idx] < 3
-                              ? 'bg-rose-950 border-rose-700 text-rose-300'
-                              : 'bg-emerald-950 border-emerald-700 text-emerald-300'
-                            : 'bg-slate-950 border-slate-800 text-slate-600'
-                        }`}
-                      >
-                        <div className="text-[10px] font-bold text-slate-500 mb-1">M{idx + 1}</div>
-                        <div className="text-base font-black">{miniSets[idx] !== undefined ? miniSets[idx] : '-'}</div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {!activationDone && (
-                    <p className="text-xs text-amber-400 text-center font-semibold bg-amber-950/40 p-2 rounded border border-amber-800/60">
-                      ⚠️ Complete activation set above to unlock mini-sets.
-                    </p>
-                  )}
-
-                  {activationDone && !isCompleted && !isResting && (
-                    <div className="space-y-3 pt-2 border-t border-slate-800">
-                      <label className="block text-xs text-slate-300 font-bold mb-2">
-                        Select Reps Completed for Mini-Set #{miniSets.length + 1}:
-                      </label>
-
-                      <div className="space-y-2">
-                        {[
-                          { reps: 5, label: '5 Reps (Target Goal)' },
-                          { reps: 4, label: '4 Reps' },
-                          { reps: 3, label: '3 Reps' },
-                          { reps: 2, label: '2 Reps (Triggers Exercise Cutoff)' },
-                          { reps: 1, label: '1 Rep (Triggers Exercise Cutoff)' }
-                        ].map(({ reps, label }) => {
-                          const isSelected = selectedReps === reps;
-                          return (
-                            <div
-                              key={reps}
-                              onClick={() => handleSelectCard(reps)}
-                              className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
-                                isSelected
-                                  ? 'bg-emerald-950/80 border-emerald-400 text-emerald-200 ring-2 ring-emerald-500/50'
-                                  : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
-                              }`}
-                            >
-                              <div className="flex items-center gap-3">
-                                <div
-                                  className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-sm ${
-                                    isSelected
-                                      ? 'bg-emerald-500 text-slate-950'
-                                      : 'bg-slate-800 text-slate-400'
-                                  }`}
-                                >
-                                  {reps}
-                                </div>
-                                <span className="text-xs font-bold">{label}</span>
-                              </div>
-
-                              {isSelected && (
-                                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider bg-emerald-900/60 px-2.5 py-1 rounded border border-emerald-700">
-                                  ✓ Selected
-                                </span>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {selectedReps !== null ? (
-                        <button
-                          type="button"
-                          onClick={handleConfirmAndStartRest}
-                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30 mt-4"
-                        >
-                          {selectedReps >= 3
-                            ? `Confirm ${selectedReps} Reps & Start 5-Breath Rest ➔`
-                            : `Confirm ${selectedReps} Reps & Complete Exercise ➔`}
-                        </button>
-                      ) : (
-                        <p className="text-xs text-slate-500 text-center italic py-1">
-                          Tap a card above to select your completed reps.
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {isCompleted && (
-                    <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
-                      <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
-                      <p className="text-xs text-slate-300">Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.</p>
-                      <button
-                        type="button"
-                        onClick={saveWorkout}
-                        className="mt-3 w-full py-2.5 bg-emerald-500 text-slate-950 font-black text-xs rounded-lg hover:bg-emerald-400 transition-colors uppercase tracking-wider"
-                      >
-                        SAVE TO HISTORY LOG
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {history.length === 0 ? (
-                  <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
-                    <p className="text-slate-500 text-sm font-semibold">No saved workouts yet.</p>
-                    <p className="text-xs text-slate-600 mt-1">Complete a Myo-Rep session to view history.</p>
-                  </div>
-                ) : (
-                  history.map((log) => (
-                    <div key={log.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h4 className="font-bold text-sm text-slate-100">{log.exercise}</h4>
-                          <span className="text-xs text-slate-400">{log.date}</span>
-                        </div>
-                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">
-                          {log.setting}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
-                        <span className="text-slate-400">Activation: <strong className="text-slate-200">{log.activationReps} reps</strong></span>
-                        <span className="text-slate-400">Mini-Sets: <strong className="text-emerald-400">[{log.miniSets.join(', ')}]</strong></span>
-                        <span className="text-slate-400">Total: <strong className="text-white">{log.totalReps}</strong></span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
-          </div>
-        );
-      }
-
-      const root = ReactDOM.createRoot(document.getElementById('root'));
-      root.render(<App />);
-    </script>
-  </body>
-</html>
