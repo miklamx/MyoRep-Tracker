@@ -17,31 +17,39 @@
 
       const STORAGE_KEY = 'myorep-history';
 
+      const MUSCLE_GROUPS = ['ALL', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
+
+      const BAND_OPTIONS = [
+        { id: 'none', label: 'None (Total Gym Only)' },
+        { id: 'orange', label: '#0 Orange (2–15 lbs)' },
+        { id: 'purple', label: '#1 Purple (5–35 lbs)' },
+        { id: 'red', label: '#2 Red (10–50 lbs)' },
+        { id: 'blue', label: '#3 Blue (25–80 lbs)' },
+        { id: 'green', label: '#4 Green (50–120 lbs)' },
+        { id: 'black', label: '#5 Black (60–150 lbs)' }
+      ];
+
       const EXERCISES = [
-        {
-          id: 'tg-squat',
-          name: 'Single-Leg Squat (Pistol Press)',
-          equipment: 'Total Gym',
-          description: 'Drive through mid-foot/heel. Keep knee tracking over second toe.',
-          defaultLevel: 'Level 5'
-        },
-        {
-          id: 'band-deadlift',
-          name: 'Foot-Anchored Band Deadlift',
-          equipment: 'Resistance Bands',
-          description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward at top.',
-          defaultLevel: 'Heavy Loop'
-        },
         {
           id: 'tg-crossover',
           name: 'Lying Cable Crossover / Fly',
+          category: 'CHEST',
           equipment: 'Total Gym',
           description: 'Lie supine on glideboard. Sweep hands over chest, driving inner elbows together.',
           defaultLevel: 'Level 5'
         },
         {
+          id: 'tg-chest-press',
+          name: 'Seated / Supine Chest Press',
+          category: 'CHEST',
+          equipment: 'Total Gym',
+          description: 'Press handles forward evenly, focusing on squeezing lower pectorals.',
+          defaultLevel: 'Level 6'
+        },
+        {
           id: 'tg-row',
           name: 'Seated Low Cable Row',
+          category: 'BACK',
           equipment: 'Total Gym',
           description: 'Keep shoulder blades depressed into back pockets. Drive elbows back to ribs.',
           defaultLevel: 'Level 5'
@@ -49,15 +57,57 @@
         {
           id: 'tg-pullover',
           name: 'Supine Arm Pullover',
+          category: 'BACK',
           equipment: 'Total Gym',
           description: 'Lie on back, pull arms from overhead to hips in controlled arc.',
           defaultLevel: 'Level 5'
         },
         {
+          id: 'tg-squat',
+          name: 'Single-Leg Squat (Pistol Press)',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'Drive through mid-foot/heel. Keep knee tracking over second toe.',
+          defaultLevel: 'Level 5'
+        },
+        {
+          id: 'band-deadlift',
+          name: 'Foot-Anchored Band Deadlift',
+          category: 'LEGS',
+          equipment: 'Resistance Bands',
+          description: 'Stand on band, hinge at hips, maintain flat spine, drive glutes forward at top.',
+          defaultLevel: 'Level 1'
+        },
+        {
           id: 'tg-overhead-press',
           name: 'Seated Overhead Press',
+          category: 'SHOULDERS',
           equipment: 'Total Gym',
           description: 'Sit facing away, press upward while keeping core tight and back supported.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-lateral-raise',
+          name: 'Cable Lateral Raise',
+          category: 'SHOULDERS',
+          equipment: 'Total Gym',
+          description: 'Sit sideways on glideboard, pull cable across body to isolate lateral deltoid.',
+          defaultLevel: 'Level 3'
+        },
+        {
+          id: 'tg-biceps-curl',
+          name: 'Seated Biceps Curl',
+          category: 'ARMS',
+          equipment: 'Total Gym',
+          description: 'Keep upper arms fixed at sides, curl handles smoothly toward shoulders.',
+          defaultLevel: 'Level 4'
+        },
+        {
+          id: 'tg-triceps-ext',
+          name: 'Supine Triceps Extension (Skull Crusher)',
+          category: 'ARMS',
+          equipment: 'Total Gym',
+          description: 'Lie back, keep elbows stationary, extend forearms overhead.',
           defaultLevel: 'Level 4'
         }
       ];
@@ -99,19 +149,31 @@
 
       function App() {
         const [activeTab, setActiveTab] = useState('workout');
+        
+        // Hierarchy States
+        const [selectedMuscle, setSelectedMuscle] = useState('ALL');
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
-        const [settingLevel, setSettingLevel] = useState('Level 5');
+        const [tgLevel, setTgLevel] = useState(5);
+        const [selectedBand, setSelectedBand] = useState('none');
+
+        // Workout Progress States
         const [activationReps, setActivationReps] = useState(12);
         const [activationDone, setActivationDone] = useState(false);
         const [miniSets, setMiniSets] = useState([]);
-        const [selectedReps, setSelectedReps] = useState(null); // Unset until clicked
+        const [selectedReps, setSelectedReps] = useState(null);
         const [restTimer, setRestTimer] = useState(0);
         const [isResting, setIsResting] = useState(false);
         const [isCompleted, setIsCompleted] = useState(false);
         const [history, setHistory] = useState([]);
 
         const timerRef = useRef(null);
-        const exercise = EXERCISES.find((item) => item.id === selectedExerciseId) || EXERCISES[0];
+
+        // Filtered exercises based on muscle group selection
+        const filteredExercises = selectedMuscle === 'ALL' 
+          ? EXERCISES 
+          : EXERCISES.filter(ex => ex.category === selectedMuscle);
+
+        const exercise = EXERCISES.find((item) => item.id === selectedExerciseId) || filteredExercises[0] || EXERCISES[0];
 
         useEffect(() => {
           try {
@@ -174,11 +236,18 @@
           setIsCompleted(false);
         };
 
+        const handleMuscleChange = (group) => {
+          setSelectedMuscle(group);
+          const firstInGroup = group === 'ALL' ? EXERCISES[0] : EXERCISES.find(ex => ex.category === group);
+          if (firstInGroup) {
+            setSelectedExerciseId(firstInGroup.id);
+          }
+          resetSession();
+        };
+
         const handleExerciseChange = (event) => {
           const nextId = event.target.value;
-          const nextExercise = EXERCISES.find((item) => item.id === nextId);
           setSelectedExerciseId(nextId);
-          setSettingLevel(nextExercise?.defaultLevel || 'Level 5');
           resetSession();
         };
 
@@ -200,7 +269,7 @@
           const repsToRecord = selectedReps;
           const nextMiniSets = [...miniSets, repsToRecord];
           setMiniSets(nextMiniSets);
-          setSelectedReps(null); // Clear selection state for next mini-set
+          setSelectedReps(null);
 
           if (repsToRecord < 3 || nextMiniSets.length >= 5) {
             setIsCompleted(true);
@@ -222,12 +291,13 @@
         };
 
         const saveWorkout = () => {
+          const bandLabel = BAND_OPTIONS.find(b => b.id === selectedBand)?.label || 'None';
           const newEntry = {
             id: Date.now(),
             date: new Date().toLocaleString(),
             exercise: exercise.name,
             equipment: exercise.equipment,
-            setting: settingLevel,
+            setting: `TG Level ${tgLevel} + Band: ${bandLabel}`,
             activationReps,
             miniSets,
             totalReps: activationReps + miniSets.reduce((sum, value) => sum + value, 0)
@@ -241,11 +311,12 @@
 
         return (
           <div className="max-w-md mx-auto p-4 pb-20">
+            {/* Header */}
             <header className="mb-6 border-b border-slate-800 pb-4">
               <div className="flex justify-between items-center">
                 <div>
                   <h1 className="text-xl font-black tracking-tight text-emerald-400">MYOREP TRACKER</h1>
-                  <p className="text-xs text-slate-400">Total Gym & Resistance Bands Engine</p>
+                  <p className="text-xs text-slate-400">Total Gym & Serious Steel Engine</p>
                 </div>
                 <span className="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
                   RPE 8 Protocol
@@ -253,6 +324,7 @@
               </div>
             </header>
 
+            {/* Navigation Tabs */}
             <div className="flex gap-2 mb-6 bg-slate-900 p-1 rounded-lg border border-slate-800">
               <button
                 type="button"
@@ -272,16 +344,44 @@
 
             {activeTab === 'workout' ? (
               <div className="space-y-6">
-                {/* Movement Selector */}
+                
+                {/* Step 1: Muscle Group Selection Pills */}
+                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    Step 1: Select Target Muscle Group
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {MUSCLE_GROUPS.map((group) => (
+                      <button
+                        key={group}
+                        type="button"
+                        onClick={() => handleMuscleChange(group)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
+                          selectedMuscle === group
+                            ? 'bg-emerald-500 text-slate-950 shadow-md'
+                            : 'bg-slate-950 text-slate-400 border border-slate-800 hover:border-slate-700'
+                        }`}
+                      >
+                        {group}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Step 2: Exercise Movement Selector */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
+                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
+                    Step 2: Choose Exercise Movement
+                  </label>
                   <select
                     className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500"
                     value={selectedExerciseId}
                     onChange={handleExerciseChange}
                   >
-                    {EXERCISES.map((item) => (
-                      <option key={item.id} value={item.id}>{item.name} ({item.equipment})</option>
+                    {filteredExercises.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name} [{item.category}]
+                      </option>
                     ))}
                   </select>
                   <p className="text-xs text-slate-400 mt-2 italic bg-slate-950 p-2 rounded border border-slate-800">
@@ -289,20 +389,47 @@
                   </p>
                 </div>
 
-                {/* Setup & Activation */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <div className="flex justify-between items-center mb-3">
-                    <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
-                    <span className="text-xs text-emerald-400 font-bold">{exercise.equipment}</span>
-                  </div>
-                  <input
-                    type="text"
-                    value={settingLevel}
-                    onChange={(e) => setSettingLevel(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-center font-bold text-emerald-400 mb-4"
-                    placeholder="e.g. Level 5 or 50lb Band"
-                  />
+                {/* Step 3: Split Equipment Configuration */}
+                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-4">
+                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    Step 3: Configure Resistance Load
+                  </label>
 
+                  {/* Total Gym Incline Level Selector */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-xs font-bold text-slate-300">Total Gym Incline Level:</span>
+                      <span className="text-xs font-black text-emerald-400">Level {tgLevel}</span>
+                    </div>
+                    <select
+                      value={tgLevel}
+                      onChange={(e) => setTgLevel(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-200"
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((lvl) => (
+                        <option key={lvl} value={lvl}>Level {lvl} Incline</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Serious Steel Band Selector */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <span className="text-xs font-bold text-slate-300">Serious Steel Band Overlay:</span>
+                      <span className="text-xs font-black text-emerald-400">41" Loop Band</span>
+                    </div>
+                    <select
+                      value={selectedBand}
+                      onChange={(e) => setSelectedBand(e.target.value)}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-200"
+                    >
+                      {BAND_OPTIONS.map((b) => (
+                        <option key={b.id} value={b.id}>{b.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Activation Set Setup */}
                   <div className="border-t border-slate-800 pt-3">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
@@ -359,11 +486,13 @@
                   </div>
                 )}
 
-                {/* Cluster Mini-Sets Panel */}
+                {/* Step 4: Cluster Mini-Sets Panel */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
+                  <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">
+                    Step 4: Cluster Mini-Sets (3–5 Reps)
+                  </h3>
 
-                  {/* Progress Indicators */}
+                  {/* Mini-Set Progress Grid */}
                   <div className="grid grid-cols-5 gap-2 mb-4">
                     {[0, 1, 2, 3, 4].map((idx) => (
                       <div
@@ -388,14 +517,13 @@
                     </p>
                   )}
 
-                  {/* Option 2: Visual Selection Cards */}
+                  {/* Card Selection UI */}
                   {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
                       <label className="block text-xs text-slate-300 font-bold mb-2">
                         Select Reps Completed for Mini-Set #{miniSets.length + 1}:
                       </label>
 
-                      {/* Stack of Cards */}
                       <div className="space-y-2">
                         {[
                           { reps: 5, label: '5 Reps (Target Goal)' },
@@ -473,6 +601,7 @@
                 </div>
               </div>
             ) : (
+              /* History Log Tab */
               <div className="space-y-3">
                 {history.length === 0 ? (
                   <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
