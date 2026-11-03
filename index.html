@@ -102,7 +102,7 @@
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
         const [settingLevel, setSettingLevel] = useState('Level 5');
         const [activationReps, setActivationReps] = useState(12);
-        const [activationDone, setActivationDone] = useState(false); // Track activation completion
+        const [activationDone, setActivationDone] = useState(false);
         const [miniSets, setMiniSets] = useState([]);
         const [selectedReps, setSelectedReps] = useState(null);
         const [restTimer, setRestTimer] = useState(0);
@@ -182,7 +182,6 @@
           resetSession();
         };
 
-        // Trigger post-activation 5-breath rest
         const handleStartActivationRest = () => {
           setActivationDone(true);
           setRestTimer(15);
@@ -198,12 +197,13 @@
         const handleConfirmAndStartRest = () => {
           if (selectedReps === null || isResting || isCompleted) return;
 
-          const nextMiniSets = [...miniSets, selectedReps];
+          const repsToRecord = selectedReps;
+          const nextMiniSets = [...miniSets, repsToRecord];
           setMiniSets(nextMiniSets);
-          const lastReps = selectedReps;
-          setSelectedReps(null);
+          setSelectedReps(null); // Clear selection so next set requires new input
 
-          if (lastReps < 3 || nextMiniSets.length >= 5) {
+          // Auto-Regulation Cutoff Rule: < 3 reps OR 5 mini-sets reached
+          if (repsToRecord < 3 || nextMiniSets.length >= 5) {
             setIsCompleted(true);
             setIsResting(false);
             setRestTimer(0);
@@ -211,6 +211,7 @@
             return;
           }
 
+          // Otherwise start 5-breath rest for next mini-set
           setRestTimer(15);
           setIsResting(true);
           playChime(440, 'sine', 0.15);
@@ -348,7 +349,7 @@
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-1">
-                      <span className="text-xs text-slate-400">Resting... prepare for next set.</span>
+                      <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
                       <button
                         type="button"
                         onClick={handleSkipRest}
@@ -360,7 +361,7 @@
                   </div>
                 )}
 
-                {/* Cluster Mini-Sets */}
+                {/* Cluster Mini-Sets Panel */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
 
@@ -391,7 +392,7 @@
                   {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
                       <label className="block text-xs text-slate-300 font-bold">
-                        Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
+                        Select Reps Completed for Mini-Set #{miniSets.length + 1}:
                       </label>
 
                       <div className="grid grid-cols-5 gap-2">
@@ -417,7 +418,7 @@
                           onClick={handleConfirmAndStartRest}
                           className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30"
                         >
-                          Step 2: Confirm {selectedReps} Reps & Start 5-Breath Rest ➔
+                          Confirm {selectedReps} Reps & Start 5-Breath Rest ➔
                         </button>
                       )}
                     </div>
