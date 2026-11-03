@@ -200,9 +200,8 @@
           const repsToRecord = selectedReps;
           const nextMiniSets = [...miniSets, repsToRecord];
           setMiniSets(nextMiniSets);
-          setSelectedReps(null); // Clear selection so next set requires new input
+          setSelectedReps(null);
 
-          // Auto-Regulation Cutoff Rule: < 3 reps OR 5 mini-sets reached
           if (repsToRecord < 3 || nextMiniSets.length >= 5) {
             setIsCompleted(true);
             setIsResting(false);
@@ -211,7 +210,6 @@
             return;
           }
 
-          // Otherwise start 5-breath rest for next mini-set
           setRestTimer(15);
           setIsResting(true);
           playChime(440, 'sine', 0.15);
@@ -274,7 +272,6 @@
 
             {activeTab === 'workout' ? (
               <div className="space-y-6">
-                {/* Movement Selector */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
                   <select
@@ -291,7 +288,6 @@
                   </p>
                 </div>
 
-                {/* Setup & Activation */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <div className="flex justify-between items-center mb-3">
                     <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
@@ -335,7 +331,6 @@
                   </div>
                 </div>
 
-                {/* Visual Breath Pacer */}
                 {isResting && (
                   <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                     <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -361,7 +356,6 @@
                   </div>
                 )}
 
-                {/* Cluster Mini-Sets Panel */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
 
