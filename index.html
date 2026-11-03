@@ -89,9 +89,7 @@
           gain.connect(ctx.destination);
           osc.start();
           osc.stop(ctx.currentTime + duration);
-        } catch (e) {
-          // Browser may block audio until interaction.
-        }
+        } catch (e) {}
       }
 
       function playGoChime() {
@@ -104,6 +102,7 @@
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
         const [settingLevel, setSettingLevel] = useState('Level 5');
         const [activationReps, setActivationReps] = useState(12);
+        const [activationDone, setActivationDone] = useState(false); // Track activation completion
         const [miniSets, setMiniSets] = useState([]);
         const [selectedReps, setSelectedReps] = useState(null);
         const [restTimer, setRestTimer] = useState(0);
@@ -169,6 +168,7 @@
           setMiniSets([]);
           setSelectedReps(null);
           setActivationReps(12);
+          setActivationDone(false);
           setIsResting(false);
           setRestTimer(0);
           setIsCompleted(false);
@@ -182,8 +182,16 @@
           resetSession();
         };
 
+        // Trigger post-activation 5-breath rest
+        const handleStartActivationRest = () => {
+          setActivationDone(true);
+          setRestTimer(15);
+          setIsResting(true);
+          playChime(440, 'sine', 0.15);
+        };
+
         const handlePickReps = (reps) => {
-          if (isResting || isCompleted) return;
+          if (isResting || isCompleted || !activationDone) return;
           setSelectedReps(reps);
         };
 
@@ -192,9 +200,10 @@
 
           const nextMiniSets = [...miniSets, selectedReps];
           setMiniSets(nextMiniSets);
+          const lastReps = selectedReps;
           setSelectedReps(null);
 
-          if (selectedReps < 3 || nextMiniSets.length >= 5) {
+          if (lastReps < 3 || nextMiniSets.length >= 5) {
             setIsCompleted(true);
             setIsResting(false);
             setRestTimer(0);
@@ -264,6 +273,7 @@
 
             {activeTab === 'workout' ? (
               <div className="space-y-6">
+                {/* Movement Selector */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <label className="block text-xs font-bold text-slate-400 mb-2 uppercase">Select Movement</label>
                   <select
@@ -280,6 +290,7 @@
                   </p>
                 </div>
 
+                {/* Setup & Activation */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <div className="flex justify-between items-center mb-3">
                     <label className="text-xs font-bold text-slate-400 uppercase">Load / Resistance Setting</label>
@@ -298,20 +309,32 @@
                       <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
                       <span className="text-xs text-slate-400">Target: 12-15 Reps</span>
                     </div>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 mb-3">
                       <input
                         type="number"
                         min="1"
                         max="30"
                         value={activationReps}
+                        disabled={activationDone}
                         onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
-                        className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white"
+                        className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white disabled:opacity-50"
                       />
                       <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
                     </div>
+
+                    {!activationDone && (
+                      <button
+                        type="button"
+                        onClick={handleStartActivationRest}
+                        className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider"
+                      >
+                        Complete Activation & Start 5-Breath Rest ➔
+                      </button>
+                    )}
                   </div>
                 </div>
 
+                {/* Visual Breath Pacer */}
                 {isResting && (
                   <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
                     <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
@@ -325,7 +348,7 @@
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-1">
-                      <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
+                      <span className="text-xs text-slate-400">Resting... prepare for next set.</span>
                       <button
                         type="button"
                         onClick={handleSkipRest}
@@ -337,6 +360,7 @@
                   </div>
                 )}
 
+                {/* Cluster Mini-Sets */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
                   <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase">CLUSTER MINI-SETS (3–5 REPS)</h3>
 
@@ -358,7 +382,13 @@
                     ))}
                   </div>
 
-                  {!isCompleted && !isResting && (
+                  {!activationDone && (
+                    <p className="text-xs text-amber-400 text-center font-semibold bg-amber-950/40 p-2 rounded border border-amber-800/60">
+                      ⚠️ Complete activation set above to unlock mini-sets.
+                    </p>
+                  )}
+
+                  {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
                       <label className="block text-xs text-slate-300 font-bold">
                         Step 1: Select Reps Completed on Mini-Set #{miniSets.length + 1}:
