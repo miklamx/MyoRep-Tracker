@@ -17,7 +17,7 @@
 
       const STORAGE_KEY = 'myorep-history';
 
-      const MUSCLE_GROUPS = ['ALL', 'BACK', 'CHEST', 'HIP MOBILITY', 'LEGS', 'SHOULDERS', 'ARMS'];
+      const MUSCLE_GROUPS = ['ALL', 'LEGS', 'CHEST', 'BACK', 'HIP MOBILITY', 'SHOULDERS', 'ARMS'];
 
       const BAND_OPTIONS = [
         { id: 'none', label: 'None (Total Gym Only)' },
@@ -30,277 +30,249 @@
       ];
 
       const EXERCISES = [
-        // --- BACK MOVEMENTS (MULTI-CREATOR TIMESTAMPED) ---
+        // --- LEG MOVEMENTS (MULTI-CREATOR TIMESTAMPED) ---
+        {
+          id: 'tg-legs-hr-side-lying-squat',
+          name: 'Single-Leg Squat (Side-Lying / Glute Drive) [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'Lie sideways on board, kick out through heel targeting outer glute and quad with light band tension.',
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=192s',
+          timestampLabel: '3:12'
+        },
+        {
+          id: 'tg-legs-hr-prone-diagonal-push',
+          name: 'Prone Diagonal Glute Push-Off [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'Face down diagonally on board, press off squat stand emphasizing glute and hamstring drive.',
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=264s',
+          timestampLabel: '4:24'
+        },
+        {
+          id: 'tg-legs-hr-jump-squats',
+          name: 'Decompressed Jump Squats [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'High tempo explosive jumps off squat stand taking all compression off lower back.',
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=304s',
+          timestampLabel: '5:04'
+        },
+        {
+          id: 'tg-legs-hr-ankle-kickbacks',
+          name: 'Ankle Strap Glute Kickbacks [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Ankle Attachment)',
+          description: 'Attach ankle strap to low cable, drive heel back for isolated glute extension.',
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=351s',
+          timestampLabel: '5:51'
+        },
+        {
+          id: 'tg-legs-hr-rail-grip-curls',
+          name: 'Prone Rail-Grip Hamstring Curls [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Ankle Attachment)',
+          description: 'Face tower holding rails, perform knee flexion curls targeting hamstrings.',
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=378s',
+          timestampLabel: '6:18'
+        },
+        {
+          id: 'tg-legs-hr-lying-leg-curls',
+          name: 'Lying Hamstring Leg Curls [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Ankle Attachment)',
+          description: 'Lie supine or slight diagonal, curl board up towards glutes.',
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=418s',
+          timestampLabel: '6:58'
+        },
+        {
+          id: 'tg-legs-hr-centered-pistol',
+          name: 'Single-Leg Pistol Press (Centered Foot) [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'Place foot directly in center of squat stand to isolate quadriceps during single leg press.',
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/mGdv6gF2IcQ?t=147s',
+          timestampLabel: '2:27'
+        },
+        {
+          id: 'tg-legs-hr-heel-driven-lockout',
+          name: 'Heel-Driven Quad Lockouts [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'Heels placed at base, drive through heels to lock out knees using pure quad extension.',
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/mGdv6gF2IcQ?t=235s',
+          timestampLabel: '3:55'
+        },
+        {
+          id: 'tg-legs-hr-pilates-bar-quad-ext',
+          name: 'Prone Pilates Bar Quad Extensions [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Pilates Bar)',
+          description: 'Prone on board, extend knees against Pilates bar focusing on mid-to-lower quad contraction.',
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/mGdv6gF2IcQ?t=275s',
+          timestampLabel: '4:35'
+        },
+        {
+          id: 'tg-legs-hr-seated-heavy-ext',
+          name: 'Seated Heavy Weighted Knee Extensions [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Ankle Attachment & Weights)',
+          description: 'Seated at top of glideboard, perform slow controlled knee extension loaded with weights or chains.',
+          defaultLevel: 'Level 6',
+          videoUrl: 'https://youtu.be/mGdv6gF2IcQ?t=408s',
+          timestampLabel: '6:48'
+        },
+        {
+          id: 'tg-legs-hr-prone-knee-ext',
+          name: 'Prone Knee Extensions (Weight/Chain Loaded) [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Ankle Attachment)',
+          description: 'Prone position with knees just past glideboard edge, extending legs back with slow pacing.',
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/mGdv6gF2IcQ?t=541s',
+          timestampLabel: '9:01'
+        },
+        {
+          id: 'tg-legs-hr-banded-quad-ext',
+          name: 'Body Elastic Band Quad Extensions [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym & Loop Bands',
+          description: 'Attach tube/loop bands to tower frame and execute seated single-leg quad extensions.',
+          defaultLevel: 'Level 4',
+          videoUrl: 'https://youtu.be/mGdv6gF2IcQ?t=637s',
+          timestampLabel: '10:37'
+        },
+        {
+          id: 'tg-legs-hr-single-jump-preexhaust',
+          name: 'Single-Leg Jump Squat Pre-Exhaust [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym',
+          description: 'Deep single-leg jump squat repetitions to pre-exhaust glutes, hamstrings, and quads.',
+          defaultLevel: 'Level 5',
+          videoUrl: 'https://youtu.be/PBk_wEoLwPs?t=100s',
+          timestampLabel: '1:40'
+        },
+        {
+          id: 'tg-legs-hr-banded-squat-overlay',
+          name: 'Step-Off Banded Squat Overlays [Hybrid Resistance]',
+          category: 'LEGS',
+          equipment: 'Total Gym & Heavy Bands',
+          description: 'Progressively increase band resistance across squat stand for peak overload at top lockout.',
+          defaultLevel: 'Level 6',
+          videoUrl: 'https://youtu.be/PBk_wEoLwPs?t=240s',
+          timestampLabel: '4:00'
+        },
+
+        {
+          id: 'tg-legs-tgd-basic-hamstring-pull',
+          name: 'Basic Hamstring Pull (Cable Assisted) [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Supine stance with cable attached to tibia, flex foot and press leg down engaging hamstrings.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=142s',
+          timestampLabel: '2:22'
+        },
+        {
+          id: 'tg-legs-tgd-hamstring-abduction',
+          name: 'Hamstring Pull with Lateral Abduction [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Combine vertical hamstring pull with outward abduction to target adductors and inner thighs.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=220s',
+          timestampLabel: '3:40'
+        },
+        {
+          id: 'tg-legs-tgd-sideline-leg-pull',
+          name: 'Side-Lying Leg Pull & Inner Thigh Scoop [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Side-lying posture, scoop leg across midline below board edge to engage inner thigh adducts.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=278s',
+          timestampLabel: '4:38'
+        },
+        {
+          id: 'tg-legs-tgd-sideline-press-ext',
+          name: 'Side-Lying Leg Press to Back Extension [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Press leg away 90° then sweep straight back into full glute and hip extension.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=342s',
+          timestampLabel: '5:42'
+        },
+        {
+          id: 'tg-legs-tgd-sideline-circles',
+          name: 'Side-Lying Leg Circles (Hip Mobility) [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Controlled leg rotation circles in side-lying position to recruit stabilizers around hip joint.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=427s',
+          timestampLabel: '7:07'
+        },
+        {
+          id: 'tg-legs-tgd-supine-circles',
+          name: 'Supine Leg Circles & Adductor Sweep [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Supine on board, rotate leg in wide arcs to stretch and strengthen around hip capsule.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=491s',
+          timestampLabel: '8:11'
+        },
+        {
+          id: 'tg-legs-tgd-prone-cable-curl',
+          name: 'Prone Cable Hamstring Curl [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Prone on forearms, extend leg straight back and curl against pulley tension.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=546s',
+          timestampLabel: '9:06'
+        },
+        {
+          id: 'tg-legs-tgd-prone-curl-lift',
+          name: 'Prone Hamstring Curl with Glute Lift [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Execute prone hamstring curl followed by high straight-leg glute lift.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=607s',
+          timestampLabel: '10:07'
+        },
+        {
+          id: 'tg-legs-tgd-curl-open-knee',
+          name: 'Hamstring Curl with Open Knee Press [TotalGymDirect]',
+          category: 'LEGS',
+          equipment: 'Total Gym (Leg Pulley System)',
+          description: 'Combine ham curl with lateral open knee drive recruiting glute medius and minimus.',
+          defaultLevel: 'Level 3',
+          videoUrl: 'https://youtu.be/01t2gZbRZy0?t=625s',
+          timestampLabel: '10:25'
+        },
+
+        // --- BACK MOVEMENTS ---
         {
           id: 'tg-back-hr-back-ext-iyt',
           name: 'Prone Back Extension & Arm Reaches (I-Y-T) [Hybrid Resistance]',
           category: 'BACK',
           equipment: 'Total Gym',
-          description: 'Prone on glideboard, raise torso into back extension while performing I-Y-T arm reaches to engage upper back and spinal erectors.',
+          description: 'Prone on glideboard, raise torso into back extension while performing I-Y-T arm reaches.',
           defaultLevel: 'Level 4',
           videoUrl: 'https://youtu.be/1P6CzdR66b0?t=120s',
           timestampLabel: '2:00'
-        },
-        {
-          id: 'tg-back-hr-dip-ext',
-          name: 'Dip-Bar Supported Back Extension [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym (Dip Bars)',
-          description: 'Place hands on dip bars to perform controlled spinal flexion and extension with offloaded lower back pressure.',
-          defaultLevel: 'Level 3',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=235s',
-          timestampLabel: '3:55'
-        },
-        {
-          id: 'tg-back-hr-decomp-hang',
-          name: 'Wing Attachment Decompression Hang [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym (Wing Attachment)',
-          description: 'Grasp top wing handles to perform a passive spinal traction hang on the glideboard.',
-          defaultLevel: 'Level 1',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=262s',
-          timestampLabel: '4:22'
-        },
-        {
-          id: 'tg-back-hr-glute-hip-ext',
-          name: 'Prone Hip & Glute Extension [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Lie face down, extend legs through glute drive to stabilize the lumbar-sacral junction.',
-          defaultLevel: 'Level 3',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=293s',
-          timestampLabel: '4:53'
-        },
-        {
-          id: 'tg-back-hr-bird-dog',
-          name: 'Incline Bird-Dog (Quadruped Reach) [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Quadruped stance on glideboard, reach opposite arm and leg out to train cross-body stability.',
-          defaultLevel: 'Level 2',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=386s',
-          timestampLabel: '6:26'
-        },
-        {
-          id: 'tg-back-hr-side-plank-hold',
-          name: 'Side Plank Lumbar Hold [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Isometric side-plank hold on board to brace quadratus lumborum and obliques without spinal rotation.',
-          defaultLevel: 'Level 3',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=445s',
-          timestampLabel: '7:25'
-        },
-        {
-          id: 'tg-back-hr-high-incline-ext',
-          name: 'High-Incline Seated Back Extension [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Seated row extension focus keeping back straight while driving resistance through hip hinge.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=524s',
-          timestampLabel: '8:44'
-        },
-        {
-          id: 'tg-back-hr-bridge-hold',
-          name: 'Squat Stand Glute & Low Back Bridge [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym (Squat Stand)',
-          description: 'Feet on squat stand, drive hips high into a bridge to hold isometric glute and spinal extension.',
-          defaultLevel: 'Level 3',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=574s',
-          timestampLabel: '9:34'
-        },
-        {
-          id: 'tg-back-hr-good-mornings',
-          name: 'Good Mornings & Hinge Pulses [Hybrid Resistance]',
-          category: 'BACK',
-          equipment: 'Total Gym (Squat Stand / Bar)',
-          description: 'Hinge forward at hips keeping spine completely flat to target hamstrings, glutes, and spinal erectors.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/1P6CzdR66b0?t=661s',
-          timestampLabel: '11:01'
-        },
-
-        {
-          id: 'tg-back-hge-seated-row',
-          name: 'Seated Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Classic seated row facing tower, driving elbows back into ribcage with full scapular retraction.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=31s',
-          timestampLabel: '0:31'
-        },
-        {
-          id: 'tg-back-hge-kneeling-row',
-          name: 'Kneeling Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Kneel facing tower to increase core stabilization while pulling handles back to hips.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=40s',
-          timestampLabel: '0:40'
-        },
-        {
-          id: 'tg-back-hge-standing-row',
-          name: 'Standing Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Standing on glideboard in semi-squat, driving handles back for low-to-high angle load.',
-          defaultLevel: 'Level 6',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=50s',
-          timestampLabel: '0:50'
-        },
-        {
-          id: 'tg-back-hge-single-arm-row',
-          name: 'Single Arm Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Unilateral row on glideboard to correct imbalances and maximize lat contraction.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=60s',
-          timestampLabel: '1:00'
-        },
-        {
-          id: 'tg-back-hge-single-arm-lat-pull',
-          name: 'Single Arm Lat Pulls [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Prone single-arm pull down the board focusing on isolated latissimus dorsi stretch.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=85s',
-          timestampLabel: '1:25'
-        },
-        {
-          id: 'tg-back-hge-side-lat-crunch',
-          name: 'Side Lat Crunch Press [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Side-kneeling stance pulling high handle down while crunching oblique and lat.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=107s',
-          timestampLabel: '1:47'
-        },
-        {
-          id: 'tg-back-hge-close-grip-pulldown',
-          name: 'Close Grip Pulldown [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Supine position on glideboard pulling handles straight down to chest line.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=131s',
-          timestampLabel: '2:11'
-        },
-        {
-          id: 'tg-back-hge-kneeling-reverse-fly',
-          name: 'Kneeling Reverse Flys [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Kneel facing tower, sweep arms out wide to hit rear delts and rhomboids.',
-          defaultLevel: 'Level 3',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=142s',
-          timestampLabel: '2:22'
-        },
-        {
-          id: 'tg-back-hge-prone-db-row',
-          name: 'Prone Dumbbell Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym & Dumbbells',
-          description: 'Chest supported face down on incline board, performing free-weight dumbbell rows.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=154s',
-          timestampLabel: '2:34'
-        },
-        {
-          id: 'tg-back-hge-pull-ups-wing',
-          name: 'Pull-Ups (Wing Bar) [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym (Wing Attachment)',
-          description: 'Prone on glideboard, pull body up using top wide wing bar.',
-          defaultLevel: 'Level 6',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=164s',
-          timestampLabel: '2:44'
-        },
-        {
-          id: 'tg-back-hge-close-grip-pull-ups',
-          name: 'Close Grip Pull-Ups (Wing Bar) [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym (Wing Attachment)',
-          description: 'Prone position with narrow grip on wing bar to shift focus to lower lats.',
-          defaultLevel: 'Level 6',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=174s',
-          timestampLabel: '2:54'
-        },
-        {
-          id: 'tg-back-hge-pull-ups-handles',
-          name: 'Pull-Ups (Handles) [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Prone pull-up using flexible cable handles at top stand.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=184s',
-          timestampLabel: '3:04'
-        },
-        {
-          id: 'tg-back-hge-behind-neck-pullups',
-          name: 'Behind Neck Pull-Ups [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Supine position pulling handles behind neck line to target upper back and traps.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=194s',
-          timestampLabel: '3:14'
-        },
-        {
-          id: 'tg-back-hge-kneeling-pullover',
-          name: 'Kneeling Pullovers [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Kneeling facing away, sweep handles straight-armed overhead down to thighs.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=206s',
-          timestampLabel: '3:26'
-        },
-        {
-          id: 'tg-back-hge-prone-pullover',
-          name: 'Prone Lat Pullovers [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Face down on glideboard, sweeping cables in wide arch to hips.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=215s',
-          timestampLabel: '3:35'
-        },
-        {
-          id: 'tg-back-hge-lying-pullover',
-          name: 'Lying Pullovers [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Lie supine, drive handles from overhead down to waist line to expand lats.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=227s',
-          timestampLabel: '3:47'
-        },
-        {
-          id: 'tg-back-hge-kneeling-supine-row',
-          name: 'Kneeling Supine Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Kneeling position with underhand grip pulling cables into lower abdomen.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=238s',
-          timestampLabel: '3:58'
-        },
-        {
-          id: 'tg-back-hge-kneeling-wide-row',
-          name: 'Kneeling Wide Rows [The Home Gym Experience]',
-          category: 'BACK',
-          equipment: 'Total Gym',
-          description: 'Kneeling position pulling elbows wide at 90 degrees to load upper back and rear delts.',
-          defaultLevel: 'Level 4',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=248s',
-          timestampLabel: '4:08'
         },
 
         // --- CHEST MOVEMENTS ---
@@ -325,18 +297,6 @@
           defaultLevel: 'Level 3',
           videoUrl: 'https://youtu.be/WdEY2WYKMpw?t=3s',
           timestampLabel: '0:03'
-        },
-
-        // --- LEGS ---
-        {
-          id: 'tg-side-lying-squat',
-          name: 'Single Leg Squat (Side-Lying)',
-          category: 'LEGS',
-          equipment: 'Total Gym',
-          description: 'Lie sideways on board, kick out through heel targeting outer glute and quad.',
-          defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/bLrO4htXz6U?t=185s',
-          timestampLabel: '3:05'
         },
 
         // --- SHOULDERS ---
@@ -398,7 +358,7 @@
       function App() {
         const [activeTab, setActiveTab] = useState('workout');
         
-        const [selectedMuscle, setSelectedMuscle] = useState('BACK');
+        const [selectedMuscle, setSelectedMuscle] = useState('LEGS');
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
         const [tgLevel, setTgLevel] = useState(5);
         const [selectedBand, setSelectedBand] = useState('none');
