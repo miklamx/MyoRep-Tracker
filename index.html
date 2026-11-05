@@ -8,6 +8,8 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Three.js CDN for 3D Anatomical Eye Candy -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   </head>
   <body class="bg-slate-950 text-slate-100 min-h-screen select-none">
     <div id="root"></div>
@@ -995,6 +997,125 @@
         }
       ];
 
+      // ==========================================
+      // 3D Anatomical Wireframe Canvas Component
+      // ==========================================
+      function AnatomicalTurntable() {
+        const mountRef = useRef(null);
+
+        useEffect(() => {
+          const container = mountRef.current;
+          if (!container || !window.THREE) return;
+
+          const width = container.clientWidth;
+          const height = container.clientHeight;
+
+          // Scene & Camera setup
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+          camera.position.set(0, 0, 4.2);
+
+          const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+          renderer.setSize(width, height);
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          container.appendChild(renderer.domElement);
+
+          // Build Procedural Anatomical T-Pose Figure (Group)
+          const figureGroup = new THREE.Group();
+
+          const wireframeMat = new THREE.MeshBasicMaterial({
+            color: 0x10b981, // Emerald Green
+            wireframe: true,
+            transparent: true,
+            opacity: 0.85
+          });
+
+          // Head
+          const headGeo = new THREE.SphereGeometry(0.22, 12, 12);
+          const headMesh = new THREE.Mesh(headGeo, wireframeMat);
+          headMesh.position.y = 1.35;
+          figureGroup.add(headMesh);
+
+          // Torso (Upper & Lower Chest/Abdomen)
+          const chestGeo = new THREE.CylinderGeometry(0.38, 0.28, 0.7, 10);
+          const chestMesh = new THREE.Mesh(chestGeo, wireframeMat);
+          chestMesh.position.y = 0.85;
+          figureGroup.add(chestMesh);
+
+          const pelvisGeo = new THREE.CylinderGeometry(0.28, 0.25, 0.4, 10);
+          const pelvisMesh = new THREE.Mesh(pelvisGeo, wireframeMat);
+          pelvisMesh.position.y = 0.35;
+          figureGroup.add(pelvisMesh);
+
+          // Left Arm Outstretched
+          const armGeo = new THREE.CylinderGeometry(0.1, 0.08, 0.9, 8);
+          const leftArm = new THREE.Mesh(armGeo, wireframeMat);
+          leftArm.rotation.z = Math.PI / 2;
+          leftArm.position.set(-0.85, 1.05, 0);
+          figureGroup.add(leftArm);
+
+          // Right Arm Outstretched
+          const rightArm = new THREE.Mesh(armGeo, wireframeMat);
+          rightArm.rotation.z = -Math.PI / 2;
+          rightArm.position.set(0.85, 1.05, 0);
+          figureGroup.add(rightArm);
+
+          // Left Leg
+          const legGeo = new THREE.CylinderGeometry(0.12, 0.08, 1.1, 8);
+          const leftLeg = new THREE.Mesh(legGeo, wireframeMat);
+          leftLeg.position.set(-0.18, -0.4, 0);
+          figureGroup.add(leftLeg);
+
+          // Right Leg
+          const rightLeg = new THREE.Mesh(legGeo, wireframeMat);
+          rightLeg.position.set(0.18, -0.4, 0);
+          figureGroup.add(rightLeg);
+
+          // Concentric Pedestal Rings
+          const ringGeo = new THREE.RingGeometry(0.6, 1.1, 24);
+          const ringMat = new THREE.MeshBasicMaterial({
+            color: 0x065f46,
+            side: THREE.DoubleSide,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.4
+          });
+          const pedestal = new THREE.Mesh(ringGeo, ringMat);
+          pedestal.rotation.x = Math.PI / 2;
+          pedestal.position.y = -1.0;
+          figureGroup.add(pedestal);
+
+          scene.add(figureGroup);
+
+          // Slow Continuous Rotation Animation Loop
+          let animationFrameId;
+          const animate = () => {
+            animationFrameId = requestAnimationFrame(animate);
+            figureGroup.rotation.y += 0.008; // Smooth 360 rotation speed
+            renderer.render(scene, camera);
+          };
+          animate();
+
+          // Cleanup on unmount
+          return () => {
+            cancelAnimationFrame(animationFrameId);
+            if (container && renderer.domElement) {
+              container.removeChild(renderer.domElement);
+            }
+            renderer.dispose();
+          };
+        }, []);
+
+        return (
+          <div className="relative w-full h-44 bg-slate-950/80 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center shadow-inner">
+            <div ref={mountRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
+            <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800/80 text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-wider backdrop-blur-sm">
+              360° TURNTABLE ANATOMY
+            </div>
+          </div>
+        );
+      }
+
       function getAudioContext() {
         const AudioCtor = window.AudioContext || window.webkitAudioContext;
         if (!AudioCtor) return null;
@@ -1223,12 +1344,16 @@
             {activeTab === 'workout' ? (
               <div className="space-y-6">
                 
-                {/* Step 1: Muscle Group Selection */}
+                {/* Step 1: Muscle Group Selection with 3D Eye-Candy Turntable */}
                 <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
                   <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                     Step 1: Select Target Muscle Group
                   </label>
-                  <div className="flex flex-wrap gap-1.5">
+
+                  {/* 3D Anatomical Eye Candy Canvas */}
+                  <AnatomicalTurntable />
+
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {MUSCLE_GROUPS.map((group) => (
                       <button
                         key={group}
