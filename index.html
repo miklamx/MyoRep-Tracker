@@ -65,6 +65,14 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #06B6D4;
     }
+    /* Horizontal scrollbar styling for exercise carousel */
+    .exercise-scroll-container::-webkit-scrollbar {
+      height: 4px;
+    }
+    .exercise-scroll-container::-webkit-scrollbar-thumb {
+      background: #06B6D4;
+      border-radius: 2px;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-brand-slate text-brand-text antialiased selection:bg-brand-cyan selection:text-slate-900">
@@ -92,7 +100,7 @@
         </button>
         <button id="nav-exercises" onclick="switchTab('exercises')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-brand-muted hover:text-white">
           <i data-lucide="dumbbell" class="w-4 h-4"></i>
-          <span>Exercises</span>
+          <span>Full Catalog</span>
         </button>
         <button id="nav-history" onclick="switchTab('history')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition flex items-center gap-1.5 text-brand-muted hover:text-white">
           <i data-lucide="history" class="w-4 h-4"></i>
@@ -110,34 +118,57 @@
       <!-- LEFT COLUMN: Load & Stimulus Index (5 cols) -->
       <section class="lg:col-span-5 space-y-6">
         
-        <!-- Active Exercise Header -->
-        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 shadow-xl relative overflow-hidden">
+        <!-- Active Exercise & Inline Carousel Header Card -->
+        <div class="bg-brand-card border border-brand-border rounded-2xl p-5 shadow-xl relative overflow-hidden space-y-4">
           <div class="absolute top-0 right-0 w-32 h-32 bg-brand-cyan/5 rounded-full blur-2xl pointer-events-none"></div>
           
-          <div class="flex justify-between items-start mb-3">
-            <span class="text-xs font-bold uppercase tracking-wider text-brand-cyan bg-brand-cyan/10 px-2.5 py-1 rounded-md border border-brand-cyan/20" id="current-muscle-group">
-              Target: Chest
-            </span>
+          <div class="flex justify-between items-center border-b border-brand-border/60 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-brand-cyan bg-brand-cyan/10 px-2.5 py-1 rounded-md border border-brand-cyan/20" id="current-muscle-group">
+                CHEST
+              </span>
+              <span class="text-xs text-brand-muted font-mono" id="carousel-count-label">5 Movements Available</span>
+            </div>
             <button onclick="switchTab('exercises')" class="text-xs text-brand-muted hover:text-brand-cyan flex items-center gap-1 transition">
-              <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Change Movement
+              <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Full Catalog
             </button>
           </div>
-          
-          <h2 class="text-2xl font-bold text-white mb-1" id="current-exercise-title">Dynamic Chest Press & Fly</h2>
-          <p class="text-xs text-brand-muted mb-4" id="current-exercise-desc">Focus on full peak contraction at top. Keep glideboard movement smooth during Myo-Rep mini-sets.</p>
 
-          <div class="grid grid-cols-2 gap-3 bg-slate-900/60 p-3 rounded-xl border border-brand-border/60">
-            <div>
-              <span class="text-[10px] text-brand-muted uppercase font-semibold">Primary Target</span>
-              <p class="text-sm font-semibold text-slate-200" id="current-primary-target">Pectoralis Major</p>
+          <!-- NEW: Horizontal Scrollable Movement Selector -->
+          <div>
+            <div class="flex justify-between items-center mb-1.5">
+              <span class="text-[11px] font-bold text-brand-muted uppercase tracking-wider">Scroll & Select Movement:</span>
+              <span class="text-[10px] text-brand-cyan font-mono">◄ Scroll Horizon ►</span>
             </div>
-            <div>
-              <span class="text-[10px] text-brand-muted uppercase font-semibold">Video Guide</span>
-              <a id="current-video-link" href="#" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1 mt-0.5">
-                <i data-lucide="video" class="w-3.5 h-3.5 text-rose-500"></i> Watch Form ➔
-              </a>
+            <div className="exercise-scroll-container flex gap-2 overflow-x-auto pb-2 pt-1 scroll-smooth" id="inline-movement-carousel">
+              <!-- Dynamically populated scrollable movement chips -->
             </div>
           </div>
+          
+          <!-- Active Movement Details Display -->
+          <div class="bg-slate-900/90 p-4 rounded-xl border border-brand-border/80 space-y-3">
+            <div>
+              <div class="flex justify-between items-start gap-2">
+                <h2 class="text-lg font-extrabold text-white leading-snug" id="current-exercise-title">Dynamic Chest Press & Fly</h2>
+                <a id="current-video-link" href="#" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/80 px-2.5 py-1 rounded border border-sky-800 flex items-center gap-1 shrink-0">
+                  <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-500 fill-current"></i> Video (<span id="current-video-timestamp">1:30</span>)
+                </a>
+              </div>
+              <p class="text-xs text-brand-muted mt-1 leading-relaxed" id="current-exercise-desc">Focus on full peak contraction at top. Keep glideboard movement smooth during Myo-Rep mini-sets.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
+              <div class="bg-slate-950 p-2 rounded border border-brand-border/40">
+                <span class="text-[10px] text-brand-muted block font-semibold">Primary Target</span>
+                <span class="font-semibold text-slate-200" id="current-primary-target">Pectoralis Major</span>
+              </div>
+              <div class="bg-slate-950 p-2 rounded border border-brand-border/40">
+                <span class="text-[10px] text-brand-muted block font-semibold">Rec. Setup</span>
+                <span class="font-semibold text-brand-amber" id="current-rec-setup">Level 5 | #1 Band</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- Glideboard Load & Stimulus Index Display -->
@@ -178,14 +209,11 @@
               <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded bg-slate-400 inline-block"></span> Optimal Reps (RIR 2)</span>
             </div>
             
-            <div class="relative h-44 w-full flex items-end justify-between pt-4 px-2" id="chart-bars-container">
-              <!-- Dynamically rendered bars L1-L8 -->
-            </div>
+            <div class="relative h-44 w-full flex items-end justify-between pt-4 px-2" id="chart-bars-container"></div>
           </div>
 
-          <!-- Interactive Calibration Controls -->
+          <!-- Calibration Controls -->
           <div class="space-y-4 pt-2 border-t border-brand-border/60">
-            <!-- 1. Bodyweight Slider -->
             <div>
               <div class="flex justify-between items-center mb-1">
                 <label class="text-xs font-semibold text-brand-muted">User Body Weight</label>
@@ -195,7 +223,6 @@
                 class="w-full accent-brand-cyan bg-slate-900 h-2 rounded-lg cursor-pointer" oninput="updateCalibrationEngine()"/>
             </div>
 
-            <!-- 2. Level Grid Selector -->
             <div>
               <div class="flex justify-between items-center mb-2">
                 <label class="text-xs font-semibold text-brand-muted">Incline Level (Total Gym FIT)</label>
@@ -204,7 +231,6 @@
               <div class="grid grid-cols-4 gap-2" id="level-button-grid"></div>
             </div>
 
-            <!-- 3. Pulley Mode Toggle -->
             <div class="bg-slate-900/60 p-3 rounded-xl border border-brand-border/60 flex items-center justify-between">
               <div>
                 <div class="text-xs font-bold text-slate-200">Pulley Engagement Mode</div>
@@ -215,7 +241,6 @@
               </button>
             </div>
 
-            <!-- 4. Serious Steel Band Overlay Grid -->
             <div>
               <div class="flex justify-between items-center mb-2">
                 <label class="text-xs font-semibold text-brand-muted">Serious Steel Band Overlay</label>
@@ -271,7 +296,6 @@
           <!-- Phase 2: Rest Timer & Mini-Sets -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             
-            <!-- 15s Timer Ring -->
             <div class="bg-slate-900/70 p-4 rounded-xl border border-brand-border/80 flex flex-col items-center justify-center relative">
               <span class="text-[11px] uppercase font-bold text-brand-muted mb-2">5-Breath Rest Pause</span>
               
@@ -296,7 +320,6 @@
               </div>
             </div>
 
-            <!-- Cluster Quick Logger -->
             <div class="bg-slate-900/70 p-4 rounded-xl border border-brand-border/80 flex flex-col justify-between">
               <div>
                 <div class="flex justify-between items-center mb-2">
@@ -306,11 +329,11 @@
                 <p class="text-[11px] text-brand-muted mb-3">Perform 2–5 reps to near failure. Tap rep count to record cluster:</p>
 
                 <div class="grid grid-cols-5 gap-1.5 mb-3">
-                  {[1, 2, 3, 4, 5].map(r => `
-                    <button onclick="logMiniSet(${r})" class="py-2.5 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-white font-mono font-bold text-xs rounded-lg border border-brand-border/60 transition shadow-sm">
-                      +${r}
-                    </button>
-                  `).join('')}
+                  <button onclick="logMiniSet(1)" class="py-2.5 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-white font-mono font-bold text-xs rounded-lg border border-brand-border/60 transition shadow-sm">+1</button>
+                  <button onclick="logMiniSet(2)" class="py-2.5 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-white font-mono font-bold text-xs rounded-lg border border-brand-border/60 transition shadow-sm">+2</button>
+                  <button onclick="logMiniSet(3)" class="py-2.5 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-white font-mono font-bold text-xs rounded-lg border border-brand-border/60 transition shadow-sm">+3</button>
+                  <button onclick="logMiniSet(4)" class="py-2.5 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-white font-mono font-bold text-xs rounded-lg border border-brand-border/60 transition shadow-sm">+4</button>
+                  <button onclick="logMiniSet(5)" class="py-2.5 bg-slate-800 hover:bg-brand-cyan hover:text-slate-950 text-white font-mono font-bold text-xs rounded-lg border border-brand-border/60 transition shadow-sm">+5</button>
                 </div>
               </div>
 
@@ -350,7 +373,6 @@
             </div>
           </div>
 
-          <!-- Save Entry CTA -->
           <button onclick="saveWorkoutToLogbook()" class="w-full py-3 bg-gradient-to-r from-brand-cyan to-blue-600 text-slate-950 font-bold text-sm rounded-xl hover:brightness-110 transition shadow-lg shadow-brand-cyan/20 flex items-center justify-center gap-2">
             <i data-lucide="save" class="w-4 h-4"></i> Save Exercise Session to Logbook
           </button>
@@ -365,7 +387,7 @@
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
             <i data-lucide="book-open" class="w-5 h-5 text-brand-cyan"></i>
-            Curated Glideboard + Band Library (82 Movement Catalog)
+            Curated Movement Catalog (82 Exercises)
           </h2>
           <p class="text-xs text-brand-muted">Integrated timestamps and form guides from select content creators.</p>
         </div>
@@ -425,9 +447,6 @@
 
   <!-- APPLICATION LOGIC & DATA ENGINE -->
   <script>
-    // ==========================================
-    // DATA CONSTANTS & MATRIX
-    // ==========================================
     const TG_FIT_LEVELS = [
       { level: 1, angle: '5.2°', directPct: 0.38, pulleyPct: 0.19 },
       { level: 2, angle: '8.0°', directPct: 0.45, pulleyPct: 0.225 },
@@ -449,6 +468,7 @@
     ];
 
     const EXERCISE_LIBRARY = [
+      // CHEST
       {
         id: 'chest-press-fly',
         name: '45° Offset Incline Cable Fly [SkylerKing]',
@@ -474,17 +494,69 @@
         timestampLabel: '1:30'
       },
       {
+        id: 'tg-chest-hr-incline-press',
+        name: 'Tilted High-Angle Incline Cable Press [Hybrid Resistance]',
+        category: 'CHEST',
+        primaryTarget: 'Clavicular Pec Head',
+        desc: 'High-seated/kneeling position with cable extension to change line of action toward upper chest.',
+        defaultLevel: 5,
+        defaultPulley: true,
+        recommendedBands: ['#1'],
+        videoUrl: 'https://youtu.be/2u1ds-5ccow?t=174s',
+        timestampLabel: '2:54'
+      },
+      {
+        id: 'tg-chest-hge-flys',
+        name: 'Seated Chest Flys [The Home Gym Experience]',
+        category: 'CHEST',
+        primaryTarget: 'Mid-Pectoralis Squeeze',
+        desc: 'Seated facing away, sweep arms forward in wide arc bringing hands together.',
+        defaultLevel: 4,
+        defaultPulley: true,
+        recommendedBands: ['#1'],
+        videoUrl: 'https://youtu.be/UlmA1srwb8o?t=88s',
+        timestampLabel: '1:28'
+      },
+
+      // HIP MOBILITY
+      {
         id: 'mob-sl-unilateral-glute-squat',
         name: 'Unilateral Single-Leg Squat with Glute Pulse [Sandy Leo]',
         category: 'HIP MOBILITY',
         primaryTarget: 'Gluteus Medius & Quadriceps',
-        desc: 'Single-leg squat with strict foot alignment in line with hip, incorporating 3-second bottom pulses to recruit glute medius.',
+        desc: 'Single-leg squat with strict foot alignment in line with hip, incorporating 3-second bottom pulses.',
         defaultLevel: 3,
         defaultPulley: false,
         recommendedBands: ['#0'],
         videoUrl: 'https://youtu.be/GIc_AJh6wek?t=765s',
         timestampLabel: '12:45'
       },
+      {
+        id: 'mob-sl-standing-ql-reach',
+        name: 'Standing QL & Lateral Fascia Reach Stretch [Sandy Leo]',
+        category: 'HIP MOBILITY',
+        primaryTarget: 'Quadratus Lumborum',
+        desc: 'Cross leg behind with turned-out foot, reach arm overhead across body to decompress QL.',
+        defaultLevel: 1,
+        defaultPulley: false,
+        recommendedBands: ['#0'],
+        videoUrl: 'https://youtu.be/GIc_AJh6wek?t=155s',
+        timestampLabel: '2:35'
+      },
+      {
+        id: 'mob-sl-bridge-adductor-taps',
+        name: 'Glute Bridge Roll-Up with Adductor Taps [Sandy Leo]',
+        category: 'HIP MOBILITY',
+        primaryTarget: 'Glutes & Inner Thighs',
+        desc: 'Elevate hips into glute bridge, roll board up and perform fast adductor knee taps.',
+        defaultLevel: 3,
+        defaultPulley: false,
+        recommendedBands: ['#1'],
+        videoUrl: 'https://youtu.be/GIc_AJh6wek?t=984s',
+        timestampLabel: '16:24'
+      },
+
+      // BACK
       {
         id: 'tg-back-hge-seated-row',
         name: 'Seated Rows [The Home Gym Experience]',
@@ -498,17 +570,45 @@
         timestampLabel: '0:31'
       },
       {
+        id: 'tg-back-hr-good-mornings',
+        name: 'Good Mornings & Hinge Pulses [Hybrid Resistance]',
+        category: 'BACK',
+        primaryTarget: 'Spinal Erectors & Glutes',
+        desc: 'Hinge forward at hips keeping spine flat to target hamstrings, glutes, and spinal erectors.',
+        defaultLevel: 4,
+        defaultPulley: false,
+        recommendedBands: ['#2'],
+        videoUrl: 'https://youtu.be/1P6CzdR66b0?t=661s',
+        timestampLabel: '11:01'
+      },
+
+      // LEGS
+      {
         id: 'tg-legs-hr-side-lying-squat',
         name: 'Single-Leg Squat (Side-Lying / Glute Drive) [Hybrid Resistance]',
         category: 'LEGS',
         primaryTarget: 'Gluteus Maximus & Quads',
-        desc: 'Lie sideways on board, kick out through heel targeting outer glute and quad with light band tension.',
+        desc: 'Lie sideways on board, kick out through heel targeting outer glute and quad.',
         defaultLevel: 5,
         defaultPulley: false,
         recommendedBands: ['#1'],
         videoUrl: 'https://youtu.be/bLrO4htXz6U?t=192s',
         timestampLabel: '3:12'
       },
+      {
+        id: 'tg-legs-hr-jump-squats',
+        name: 'Decompressed Jump Squats [Hybrid Resistance]',
+        category: 'LEGS',
+        primaryTarget: 'Explosive Quads & Calves',
+        desc: 'High tempo explosive jumps off squat stand taking all compression off lower back.',
+        defaultLevel: 4,
+        defaultPulley: false,
+        recommendedBands: ['#2'],
+        videoUrl: 'https://youtu.be/bLrO4htXz6U?t=304s',
+        timestampLabel: '5:04'
+      },
+
+      // SHOULDERS
       {
         id: 'tg-sh-hr-inverted-press',
         name: 'Inverted Shoulder Overhead Press [Hybrid Resistance]',
@@ -521,6 +621,8 @@
         videoUrl: 'https://youtu.be/BfLIqsN9e_0?t=60s',
         timestampLabel: '1:00'
       },
+
+      // ARMS
       {
         id: 'tg-arm-hr-alt-curl',
         name: 'Seated Alternating Biceps Curls [Hybrid Resistance]',
@@ -535,9 +637,6 @@
       }
     ];
 
-    // ==========================================
-    // APP STATE
-    // ==========================================
     let state = {
       userBodyWeight: 180,
       selectedLevel: 5,
@@ -574,13 +673,11 @@
       } catch(e) {}
     }
 
-    // ==========================================
-    // INITIALIZATION & UI RENDERERS
-    // ==========================================
     window.addEventListener('DOMContentLoaded', () => {
       loadStateFromLocalStorage();
       renderLevelButtons();
       renderBandButtons();
+      renderInlineCarousel();
       renderExerciseLibrary();
       updateCalibrationEngine();
       renderLogbook();
@@ -596,6 +693,38 @@
           state.logbook = [];
         }
       }
+    }
+
+    // ==========================================
+    // NEW: INLINE MOVEMENT CAROUSEL RENDERER
+    // ==========================================
+    function renderInlineCarousel() {
+      const container = document.getElementById('inline-movement-carousel');
+      container.innerHTML = '';
+
+      const currentCategory = state.activeExercise.category;
+      document.getElementById('current-muscle-group').textContent = currentCategory;
+
+      const categoryMovements = EXERCISE_LIBRARY.filter(e => e.category === currentCategory);
+      document.getElementById('carousel-count-label').textContent = `${categoryMovements.length} Movements Available`;
+
+      categoryMovements.forEach(ex => {
+        const isSelected = ex.id === state.activeExercise.id;
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.onclick = () => selectExercise(ex.id);
+        chip.className = `px-3 py-2 rounded-xl text-xs font-semibold shrink-0 transition flex flex-col items-start border text-left ${
+          isSelected 
+            ? 'bg-brand-cyan text-slate-950 border-brand-cyan shadow-md font-bold ring-2 ring-brand-cyan/40' 
+            : 'bg-slate-900/90 text-brand-muted border-brand-border hover:border-slate-500 hover:text-white'
+        }`;
+        
+        chip.innerHTML = `
+          <span class="truncate max-w-[170px] leading-tight block">${ex.name}</span>
+          <span class="text-[9px] opacity-80 mt-1 font-mono">Rec L${ex.defaultLevel} • ${ex.timestampLabel}</span>
+        `;
+        container.appendChild(chip);
+      });
     }
 
     function renderLevelButtons() {
@@ -645,9 +774,6 @@
       });
     }
 
-    // ==========================================
-    // LOAD & STIMULUS INDEX ENGINE
-    // ==========================================
     function setLevel(lvl) {
       state.selectedLevel = lvl;
       renderLevelButtons();
@@ -699,8 +825,6 @@
       const currentLoad = baseGlideboardLoad + bandPeakLoad;
       const tenRepTonnage = Math.round(currentLoad * 10);
 
-      // Hypertrophy Index & RIR 2 Calculation
-      const estimatedMaxReps = Math.max(4, Math.round(18 - (currentLoad / 10)));
       const hypertrophyIndex = Math.min(10, Math.max(1.0, (140 / Math.max(1, currentLoad)) * 7.2)).toFixed(1);
 
       document.getElementById('metric-current-load').textContent = `${currentLoad.toFixed(1)} lbs`;
@@ -726,7 +850,6 @@
         const maxScale = 200;
         const barHeightPct = Math.min(100, Math.max(15, (totalBarLoad / maxScale) * 100));
         
-        // RIR 2 Projected Rep Line height
         const projectedReps = Math.max(3, Math.round(15 - (lvlObj.level * 1.2)));
         const repDotBottomPct = Math.min(90, Math.max(10, (projectedReps / 15) * 100));
 
@@ -735,27 +858,21 @@
         barWrapper.onclick = () => setLevel(lvlObj.level);
 
         barWrapper.innerHTML = `
-          <!-- RIR 2 Line Dot -->
           <div class="absolute w-2 h-2 rounded-full bg-slate-200 z-10 border border-slate-900 shadow-md group-hover:scale-125 transition" 
             style="bottom: ${repDotBottomPct}%;"></div>
 
-          <!-- Load Bar -->
           <div class="w-full max-w-[28px] rounded-t-lg transition-all duration-300 ${
             isCurrent 
               ? 'bg-gradient-to-t from-brand-cyan to-cyan-300 shadow-lg shadow-brand-cyan/30' 
               : 'bg-slate-700/60 hover:bg-slate-600/80'
           }" style="height: ${barHeightPct}%;"></div>
 
-          <!-- Level Label -->
           <span class="text-[9px] font-mono mt-1 ${isCurrent ? 'text-brand-cyan font-bold' : 'text-slate-400'}">L${lvlObj.level}</span>
         `;
         container.appendChild(barWrapper);
       });
     }
 
-    // ==========================================
-    // TRACKER & TIMER
-    // ==========================================
     function confirmActivationSet() {
       const input = document.getElementById('activation-reps-input');
       const val = parseInt(input.value) || 0;
@@ -923,9 +1040,6 @@
       ring.style.strokeDashoffset = offset;
     }
 
-    // ==========================================
-    // EXERCISE CATALOG & LOGBOOK
-    // ==========================================
     function renderExerciseLibrary(filter = 'All') {
       const container = document.getElementById('exercise-cards-grid');
       container.innerHTML = '';
@@ -985,17 +1099,20 @@
 
       document.getElementById('current-exercise-title').textContent = ex.name;
       document.getElementById('current-exercise-desc').textContent = ex.desc;
-      document.getElementById('current-muscle-group').textContent = `Target: ${ex.category}`;
       document.getElementById('current-primary-target').textContent = ex.primaryTarget;
+      document.getElementById('current-rec-setup').textContent = `Level ${ex.defaultLevel} | ${ex.recommendedBands.join(', ')} Band`;
       
       const vLink = document.getElementById('current-video-link');
+      const vTimestamp = document.getElementById('current-video-timestamp');
       if (ex.videoUrl) {
         vLink.href = ex.videoUrl;
+        vTimestamp.textContent = ex.timestampLabel;
         vLink.style.display = 'inline-flex';
       } else {
         vLink.style.display = 'none';
       }
 
+      renderInlineCarousel();
       renderLevelButtons();
       renderBandButtons();
       updateCalibrationEngine();
