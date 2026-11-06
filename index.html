@@ -385,7 +385,7 @@
       </section>
     </div>
 
-    <!-- VIEW 2: MUSCLE GROUP EXPLORER & PREVIEW CATALOG -->
+    <!-- VIEW 2: MUSCLE GROUP EXPLORER & SCROLLING CATALOG VIEW -->
     <div id="view-exercises" class="hidden space-y-6">
       
       <!-- Muscle Group Filter Header -->
@@ -395,7 +395,7 @@
             <i data-lucide="grid" class="w-5 h-5 text-brand-cyan"></i>
             Muscle Group Exercise Catalog
           </h2>
-          <p class="text-xs text-brand-muted">Select a muscle group to view available exercises, watch form previews, and load setups into the engine.</p>
+          <p class="text-xs text-brand-muted">Select a muscle group to view all available exercises in a scrolling list.</p>
         </div>
 
         <!-- Category Selector Pills -->
@@ -410,19 +410,9 @@
         </div>
       </div>
 
-      <!-- Main Catalog Layout: Left Scrollable List + Right Detail Preview Panel -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        
-        <!-- Left 7 Cols: Scrollable Exercise List for Selected Muscle Group -->
-        <div class="lg:col-span-7 space-y-3 max-h-[68vh] overflow-y-auto pr-2" id="exercise-scroll-list">
-          <!-- Dynamically injected scrollable exercise list items -->
-        </div>
-
-        <!-- Right 5 Cols: Dedicated Exercise Detail & Video Preview Panel -->
-        <div class="lg:col-span-5 bg-brand-card border border-brand-border rounded-2xl p-6 shadow-xl space-y-5 sticky top-24 h-fit" id="exercise-preview-panel">
-          <!-- Dynamically injected selected exercise details -->
-        </div>
-
+      <!-- Single Vertical Scrolling Container for Exercises -->
+      <div class="space-y-4 max-h-[72vh] overflow-y-auto pr-2" id="exercise-scroll-list">
+        <!-- Dynamically injected exercise cards with details, videos, & calibration trigger -->
       </div>
     </div>
 
@@ -663,7 +653,6 @@
       isPulleyEngaged: true,
       selectedBandIds: ['#1'],
       activeExercise: EXERCISE_LIBRARY[0],
-      previewCatalogExercise: EXERCISE_LIBRARY[0],
       currentCategoryFilter: 'CHEST',
       
       activationReps: 14,
@@ -717,9 +706,6 @@
       }
     }
 
-    // ==========================================
-    // INLINE CAROUSEL (TRACKER VIEW 1)
-    // ==========================================
     function renderInlineCarousel() {
       const container = document.getElementById('inline-movement-carousel');
       container.innerHTML = '';
@@ -1063,7 +1049,7 @@
     }
 
     // ==========================================
-    // MUSCLE GROUP CATALOG & PREVIEW PANEL LOGIC
+    // MUSCLE GROUP CATALOG (SCROLLING LIST VIEW)
     // ==========================================
     function filterExercises(category) {
       state.currentCategoryFilter = category;
@@ -1081,110 +1067,59 @@
     }
 
     function renderExerciseCatalog(filterCategory = 'CHEST') {
-      const scrollListContainer = document.getElementById('exercise-scroll-list');
-      scrollListContainer.innerHTML = '';
+      const scrollContainer = document.getElementById('exercise-scroll-list');
+      scrollContainer.innerHTML = '';
 
       const filtered = filterCategory === 'All' 
         ? EXERCISE_LIBRARY 
         : EXERCISE_LIBRARY.filter(e => e.category.toLowerCase() === filterCategory.toLowerCase());
 
       if (filtered.length === 0) {
-        scrollListContainer.innerHTML = `<p class="text-xs text-brand-muted italic p-4">No exercises found for this muscle group.</p>`;
+        scrollContainer.innerHTML = `<p class="text-xs text-brand-muted italic p-4">No exercises found for this muscle group.</p>`;
         return;
       }
 
-      // Default preview to first item in filtered list if not already previewing
-      if (!filtered.some(e => e.id === state.previewCatalogExercise.id)) {
-        state.previewCatalogExercise = filtered[0];
-      }
-
       filtered.forEach(ex => {
-        const isSelected = ex.id === state.previewCatalogExercise.id;
-        const item = document.createElement('div');
-        item.onclick = () => previewCatalogItem(ex.id);
-        item.className = `p-4 rounded-xl border transition cursor-pointer flex items-center justify-between gap-3 ${
-          isSelected 
-            ? 'bg-brand-card border-brand-cyan ring-1 ring-brand-cyan shadow-md' 
-            : 'bg-brand-card/60 border-brand-border/80 hover:border-slate-500 hover:bg-brand-card'
-        }`;
+        const card = document.createElement('div');
+        card.className = 'bg-brand-card border border-brand-border/80 hover:border-brand-cyan/60 rounded-xl p-5 shadow-lg space-y-3 transition';
         
-        item.innerHTML = `
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <span class="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">${ex.category}</span>
-              <h4 class="text-sm font-bold ${isSelected ? 'text-brand-cyan' : 'text-white'}">${ex.name}</h4>
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">${ex.category}</span>
+              <h3 class="text-base font-bold text-white mt-1.5">${ex.name}</h3>
             </div>
-            <p class="text-xs text-brand-muted line-clamp-1">${ex.desc}</p>
+            <span class="text-xs font-mono text-brand-amber font-bold bg-slate-950 px-2.5 py-1 rounded border border-brand-border/40">Rec Level ${ex.defaultLevel}</span>
           </div>
-          <div class="text-right shrink-0">
-            <span class="text-xs font-mono text-brand-amber font-bold block">Rec L${ex.defaultLevel}</span>
-            <span class="text-[10px] text-brand-muted font-mono">${ex.timestampLabel}</span>
+
+          <p class="text-xs text-brand-muted leading-relaxed">${ex.desc}</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
+            <div class="bg-slate-950 p-2 rounded border border-brand-border/40">
+              <span class="text-[10px] text-brand-muted block font-semibold">Primary Target</span>
+              <span class="font-semibold text-slate-200">${ex.primaryTarget}</span>
+            </div>
+            <div class="bg-slate-950 p-2 rounded border border-brand-border/40">
+              <span class="text-[10px] text-brand-muted block font-semibold">Band Setup</span>
+              <span class="font-semibold text-brand-amber">${ex.recommendedBands.join(', ')} Band</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-2 border-t border-brand-border/60 gap-3">
+            ${ex.videoUrl ? `
+              <a href="${ex.videoUrl}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/80 px-3 py-1.5 rounded-lg border border-sky-800 flex items-center gap-1.5 shrink-0">
+                <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-500 fill-current"></i> Video (${ex.timestampLabel}) ➔
+              </a>
+            ` : '<div></div>'}
+            
+            <button onclick="selectExercise('${ex.id}')" class="px-4 py-2 bg-gradient-to-r from-brand-cyan to-blue-600 text-slate-950 font-bold text-xs rounded-lg hover:brightness-110 transition shadow-md flex items-center gap-1.5">
+              <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Load into Calibration Engine
+            </button>
           </div>
         `;
-        scrollListContainer.appendChild(item);
+        scrollContainer.appendChild(card);
       });
 
-      renderPreviewPanel();
-      lucide.createIcons();
-    }
-
-    function previewCatalogItem(exId) {
-      const ex = EXERCISE_LIBRARY.find(e => e.id === exId);
-      if (!ex) return;
-      state.previewCatalogExercise = ex;
-      renderExerciseCatalog(state.currentCategoryFilter);
-    }
-
-    function renderPreviewPanel() {
-      const panel = document.getElementById('exercise-preview-panel');
-      const ex = state.previewCatalogExercise;
-      
-      if (!ex) return;
-
-      panel.innerHTML = `
-        <div class="space-y-4">
-          <div class="flex justify-between items-start border-b border-brand-border/60 pb-3">
-            <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">${ex.category}</span>
-              <h3 class="text-lg font-extrabold text-white mt-2 leading-snug">${ex.name}</h3>
-            </div>
-          </div>
-
-          <div class="space-y-3">
-            <div>
-              <span class="text-[10px] uppercase font-semibold text-brand-muted block">Movement Description</span>
-              <p class="text-xs text-slate-300 leading-relaxed mt-0.5">${ex.desc}</p>
-            </div>
-
-            <div class="grid grid-cols-2 gap-2 text-xs pt-1">
-              <div class="bg-slate-950 p-2.5 rounded-lg border border-brand-border/40">
-                <span class="text-[10px] text-brand-muted block font-semibold">Primary Target</span>
-                <span class="font-semibold text-slate-200">${ex.primaryTarget}</span>
-              </div>
-              <div class="bg-slate-950 p-2.5 rounded-lg border border-brand-border/40">
-                <span class="text-[10px] text-brand-muted block font-semibold">Recommended Setup</span>
-                <span class="font-semibold text-brand-amber">Level ${ex.defaultLevel} | ${ex.recommendedBands.join(', ')} Band</span>
-              </div>
-            </div>
-
-            ${ex.videoUrl ? `
-              <div class="bg-slate-950 p-3 rounded-xl border border-sky-900/60 flex items-center justify-between">
-                <div>
-                  <span class="text-[10px] text-brand-muted block font-semibold">Video Form Guide</span>
-                  <span class="text-xs text-sky-400 font-bold font-mono">Timestamp (${ex.timestampLabel})</span>
-                </div>
-                <a href="${ex.videoUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-sky-950 text-sky-400 hover:text-sky-300 border border-sky-800 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
-                  <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-500 fill-current"></i> Watch Guide ➔
-                </a>
-              </div>
-            ` : ''}
-          </div>
-
-          <button onclick="selectExercise('${ex.id}')" class="w-full py-3 bg-gradient-to-r from-brand-cyan to-blue-600 text-slate-950 font-bold text-xs rounded-xl hover:brightness-110 transition shadow-lg shadow-brand-cyan/20 flex items-center justify-center gap-2 mt-4">
-            <i data-lucide="sliders" class="w-4 h-4"></i> Load into Calibration Engine
-          </button>
-        </div>
-      `;
       lucide.createIcons();
     }
 
