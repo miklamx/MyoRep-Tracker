@@ -1174,7 +1174,7 @@
       function App() {
         const [activeTab, setActiveTab] = useState('workout');
         
-        const [userBodyWeight, setUserBodyWeight] = useState(180);
+        const [userBodyWeightStr, setUserBodyWeightStr] = useState('180');
         const [selectedMuscle, setSelectedMuscle] = useState('ALL');
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
         const [tgLevel, setTgLevel] = useState(5);
@@ -1191,6 +1191,8 @@
 
         const timerRef = useRef(null);
 
+        const parsedBodyWeight = parseFloat(userBodyWeightStr) || 0;
+
         const filteredExercises = selectedMuscle === 'ALL' 
           ? EXERCISES 
           : EXERCISES.filter(ex => ex.category === selectedMuscle);
@@ -1200,7 +1202,7 @@
 
         // Calculated effective working load
         const activeLvlObj = TG_FIT_LEVELS.find(l => l.level === tgLevel) || TG_FIT_LEVELS[4];
-        const currentGlideboardLoad = Math.round(userBodyWeight * activeLvlObj.bodyWeightPct);
+        const currentGlideboardLoad = Math.round(parsedBodyWeight * activeLvlObj.bodyWeightPct);
         const currentTotalWorkingLoad = currentGlideboardLoad + selectedBandObj.tension;
 
         useEffect(() => {
@@ -1446,10 +1448,18 @@
                     <span className="text-xs font-bold text-brand-muted">User Body Weight:</span>
                     <div className="flex items-center gap-1">
                       <input
-                        type="number"
-                        value={userBodyWeight}
-                        onChange={(e) => setUserBodyWeight(Math.max(80, Number(e.target.value) || 180))}
-                        className="w-16 bg-slate-900 border border-slate-700 text-center rounded text-xs font-mono font-bold text-brand-cyan p-1"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={userBodyWeightStr}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === '' || /^\d*$/.test(val)) {
+                            setUserBodyWeightStr(val);
+                          }
+                        }}
+                        placeholder="180"
+                        className="w-16 bg-slate-900 border border-slate-700 text-center rounded text-xs font-mono font-bold text-brand-cyan p-1 focus:outline-none focus:border-brand-cyan"
                       />
                       <span className="text-xs text-brand-muted font-bold">lbs</span>
                     </div>
@@ -1502,7 +1512,7 @@
 
                     <div className="relative h-28 w-full flex items-end justify-between pt-4 px-1 border-b border-slate-800 gap-1">
                       {TG_FIT_LEVELS.map((l) => {
-                        const boardLoad = Math.round(userBodyWeight * l.bodyWeightPct);
+                        const boardLoad = Math.round(parsedBodyWeight * l.bodyWeightPct);
                         const totalLoad = boardLoad + selectedBandObj.tension;
                         const isSelected = l.level === tgLevel;
                         const barHeightPct = Math.min(100, Math.max(15, (totalLoad / 300) * 100));
