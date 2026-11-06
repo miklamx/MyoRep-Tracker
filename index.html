@@ -3,13 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MyoRep Tracker</title>
+    <title>KineticForge | MyoRep Protocol</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for KineticForge typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- KineticForge Custom Brand Theme Extensions -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                base: '#0F172A',      // Dark Base
+                surface: '#1E293B',   // Surface Layer / Card Background
+                cyan: '#06B6D4',      // Volt Cyan (Primary Accent)
+                amber: '#F59E0B',     // Dynamic Amber (Secondary Accent)
+                text: '#F8FAFC',      // Text Primary
+                muted: '#94A3B8',     // Text Muted
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            }
+          }
+        }
+      }
+    </script>
+    
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen select-none">
+  <body class="bg-brand-base text-brand-text min-h-screen select-none font-sans">
     <div id="root"></div>
 
     <script type="text/babel">
@@ -668,7 +698,7 @@
           equipment: 'Total Gym',
           description: 'Face down on glideboard, sweeping cables in wide arch to hips.',
           defaultLevel: 'Level 5',
-          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=215s',
+          videoUrl: 'https://youtu.be/nwcuMf2M6Ho?t=235s',
           timestampLabel: '3:35'
         },
         {
@@ -1291,30 +1321,32 @@
 
         return (
           <div className="max-w-md mx-auto p-4 pb-20">
-            <header className="mb-6 border-b border-slate-800 pb-4">
+            {/* Header updated with KineticForge Branding */}
+            <header className="mb-6 border-b border-brand-surface pb-4">
               <div className="flex justify-between items-center">
                 <div>
-                  <h1 className="text-xl font-black tracking-tight text-emerald-400">MYOREP TRACKER</h1>
-                  <p className="text-xs text-slate-400">Total Gym & Serious Steel Engine</p>
+                  <h1 className="text-2xl font-black tracking-tight text-brand-cyan">KINETICFORGE</h1>
+                  <p className="text-xs text-brand-muted">Total Gym FIT + Serious Steel Engine</p>
                 </div>
-                <span className="text-xs font-semibold px-2.5 py-1 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">
+                <span className="text-xs font-bold px-2.5 py-1 rounded bg-slate-900 text-brand-amber border border-brand-amber/40">
                   RPE 8 Protocol
                 </span>
               </div>
             </header>
 
-            <div className="flex gap-2 mb-6 bg-slate-900 p-1 rounded-lg border border-slate-800">
+            {/* Navigation Tabs */}
+            <div className="flex gap-2 mb-6 bg-brand-surface p-1 rounded-lg border border-slate-700/50">
               <button
                 type="button"
                 onClick={() => setActiveTab('workout')}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeTab === 'workout' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-2 text-xs font-black rounded-md transition-all ${activeTab === 'workout' ? 'bg-brand-cyan text-brand-base shadow-md' : 'text-brand-muted hover:text-brand-text'}`}
               >
                 WORKOUT
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('history')}
-                className={`flex-1 py-2 text-xs font-bold rounded-md transition-all ${activeTab === 'history' ? 'bg-emerald-500 text-slate-950' : 'text-slate-400 hover:text-white'}`}
+                className={`flex-1 py-2 text-xs font-black rounded-md transition-all ${activeTab === 'history' ? 'bg-brand-cyan text-brand-base shadow-md' : 'text-brand-muted hover:text-brand-text'}`}
               >
                 HISTORY ({history.length})
               </button>
@@ -1324,8 +1356,8 @@
               <div className="space-y-6">
                 
                 {/* Step 1: Muscle Group Selection */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-3">
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
+                  <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
                     Step 1: Select Target Muscle Group
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -1336,8 +1368,8 @@
                         onClick={() => handleMuscleChange(group)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
                           selectedMuscle === group
-                            ? 'bg-emerald-500 text-slate-950 shadow-md'
-                            : 'bg-slate-950 text-slate-400 border border-slate-800 hover:border-slate-700'
+                            ? 'bg-brand-cyan text-brand-base shadow-md'
+                            : 'bg-brand-base text-brand-muted border border-slate-800 hover:border-slate-700'
                         }`}
                       >
                         {group}
@@ -1347,12 +1379,12 @@
                 </div>
 
                 {/* Step 2: Exercise Movement Selector + Timestamped Video Link */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wider">
+                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
+                  <label className="block text-xs font-bold text-brand-muted mb-2 uppercase tracking-wider">
                     Step 2: Choose Exercise Movement ({filteredExercises.length} Available)
                   </label>
                   <select
-                    className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-slate-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-brand-base border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-brand-text focus:outline-none focus:border-brand-cyan"
                     value={selectedExerciseId}
                     onChange={handleExerciseChange}
                   >
@@ -1363,8 +1395,8 @@
                     ))}
                   </select>
 
-                  <div className="mt-3 bg-slate-950 p-3 rounded-lg border border-slate-800 space-y-2">
-                    <p className="text-xs text-slate-300 italic">
+                  <div className="mt-3 bg-brand-base p-3 rounded-lg border border-slate-800 space-y-2">
+                    <p className="text-xs text-brand-muted italic">
                       💡 {exercise.description}
                     </p>
 
@@ -1374,7 +1406,7 @@
                         href={exercise.videoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/60 hover:bg-sky-900/60 px-2.5 py-1.5 rounded border border-sky-800 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-cyan hover:underline bg-brand-surface px-2.5 py-1.5 rounded border border-slate-700 transition-colors"
                       >
                         <svg className="w-3.5 h-3.5 fill-current text-rose-500" viewBox="0 0 24 24">
                           <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
@@ -1386,22 +1418,22 @@
                 </div>
 
                 {/* Step 3: Equipment Configuration */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-4">
-                  <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-4">
+                  <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
                     Step 3: Configure Resistance Load
                   </label>
 
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-bold text-slate-300">Total Gym Incline Level:</span>
-                      <span className="text-xs font-black text-emerald-400">Level {tgLevel}</span>
+                      <span className="text-xs font-bold text-brand-text">Total Gym FIT Incline Level:</span>
+                      <span className="text-xs font-black text-brand-cyan">Level {tgLevel}</span>
                     </div>
                     <select
                       value={tgLevel}
                       onChange={(e) => setTgLevel(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-200"
+                      className="w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text"
                     >
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((lvl) => (
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((lvl) => (
                         <option key={lvl} value={lvl}>Level {lvl} Incline</option>
                       ))}
                     </select>
@@ -1409,13 +1441,13 @@
 
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-bold text-slate-300">Serious Steel Band Overlay:</span>
-                      <span className="text-xs font-black text-emerald-400">41 inch Loop Band</span>
+                      <span className="text-xs font-bold text-brand-text">Serious Steel Band Overlay:</span>
+                      <span className="text-xs font-black text-brand-cyan">41 inch Loop Band</span>
                     </div>
                     <select
                       value={selectedBand}
                       onChange={(e) => setSelectedBand(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-xs font-bold text-slate-200"
+                      className="w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text"
                     >
                       {BAND_OPTIONS.map((b) => (
                         <option key={b.id} value={b.id}>{b.label}</option>
@@ -1425,8 +1457,8 @@
 
                   <div className="border-t border-slate-800 pt-3">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-bold text-slate-200">ACTIVATION SET (RPE 8)</span>
-                      <span className="text-xs text-slate-400">Target: 12-15 Reps</span>
+                      <span className="text-xs font-bold text-brand-text">ACTIVATION SET (RPE 8)</span>
+                      <span className="text-xs text-brand-muted">Target: 12-15 Reps</span>
                     </div>
                     <div className="flex items-center gap-3 mb-3">
                       <input
@@ -1436,16 +1468,16 @@
                         value={activationReps}
                         disabled={activationDone}
                         onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
-                        className="w-20 bg-slate-950 border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-white disabled:opacity-50"
+                        className="w-20 bg-brand-base border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-brand-text disabled:opacity-50"
                       />
-                      <span className="text-xs text-slate-400 flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
+                      <span className="text-xs text-brand-muted flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
                     </div>
 
                     {!activationDone && (
                       <button
                         type="button"
                         onClick={handleStartActivationRest}
-                        className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg transition-all uppercase tracking-wider"
+                        className="w-full py-2.5 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-lg transition-all uppercase tracking-wider"
                       >
                         Complete Activation & Start 5-Breath Rest ➔
                       </button>
@@ -1455,23 +1487,23 @@
 
                 {/* Rest Timer */}
                 {isResting && (
-                  <div className="bg-slate-900 border-2 border-emerald-500/80 p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-emerald-950/50">
-                    <span className="text-xs font-black uppercase text-emerald-400 tracking-widest block">
+                  <div className="bg-brand-surface border-2 border-brand-cyan p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-cyan-950/40">
+                    <span className="text-xs font-black uppercase text-brand-cyan tracking-widest block">
                       5-BREATH REST PAUSE
                     </span>
                     <div className="relative flex items-center justify-center my-2 h-20">
-                      <div className="w-20 h-20 rounded-full border-4 border-emerald-500/30 animate-ping absolute" />
-                      <div className="w-16 h-16 rounded-full bg-emerald-950 border-2 border-emerald-400 flex flex-col items-center justify-center z-10">
-                        <span className="text-xl font-black text-emerald-300">{restTimer}s</span>
-                        <span className="text-[9px] text-emerald-400 font-bold uppercase">Breath {currentBreath}/5</span>
+                      <div className="w-20 h-20 rounded-full border-4 border-brand-cyan/30 animate-ping absolute" />
+                      <div className="w-16 h-16 rounded-full bg-brand-base border-2 border-brand-cyan flex flex-col items-center justify-center z-10">
+                        <span className="text-xl font-mono font-black text-brand-cyan">{restTimer}s</span>
+                        <span className="text-[9px] text-brand-muted font-bold uppercase">Breath {currentBreath}/5</span>
                       </div>
                     </div>
                     <div className="flex items-center justify-between pt-1">
-                      <span className="text-xs text-slate-400">Resting... prepare for next mini-set.</span>
+                      <span className="text-xs text-brand-muted">Resting... prepare for next mini-set.</span>
                       <button
                         type="button"
                         onClick={handleSkipRest}
-                        className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded border border-slate-700"
+                        className="px-3 py-1 bg-brand-base hover:bg-slate-800 text-brand-text text-xs font-bold rounded border border-slate-700"
                       >
                         Skip Rest ➔
                       </button>
@@ -1480,8 +1512,8 @@
                 )}
 
                 {/* Step 4: Mini-Sets */}
-                <div className="bg-slate-900 p-4 rounded-xl border border-slate-800">
-                  <h3 className="text-xs font-bold text-slate-400 mb-3 uppercase tracking-wider">
+                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
+                  <h3 className="text-xs font-bold text-brand-muted mb-3 uppercase tracking-wider">
                     Step 4: Cluster Mini-Sets (3–5 Reps)
                   </h3>
 
@@ -1492,26 +1524,26 @@
                         className={`p-3 rounded-lg border text-center transition-all ${
                           miniSets[idx] !== undefined
                             ? miniSets[idx] < 3
-                              ? 'bg-rose-950 border-rose-700 text-rose-300'
-                              : 'bg-emerald-950 border-emerald-700 text-emerald-300'
-                            : 'bg-slate-950 border-slate-800 text-slate-600'
+                              ? 'bg-rose-950/80 border-rose-700 text-rose-300'
+                              : 'bg-slate-900 border-brand-cyan text-brand-cyan'
+                            : 'bg-brand-base border-slate-800 text-slate-600'
                         }`}
                       >
                         <div className="text-[10px] font-bold text-slate-500 mb-1">M{idx + 1}</div>
-                        <div className="text-base font-black">{miniSets[idx] !== undefined ? miniSets[idx] : '-'}</div>
+                        <div className="text-base font-black font-mono">{miniSets[idx] !== undefined ? miniSets[idx] : '-'}</div>
                       </div>
                     ))}
                   </div>
 
                   {!activationDone && (
-                    <p className="text-xs text-amber-400 text-center font-semibold bg-amber-950/40 p-2 rounded border border-amber-800/60">
+                    <p className="text-xs text-brand-amber text-center font-semibold bg-amber-950/30 p-2 rounded border border-amber-800/40">
                       ⚠️ Complete activation set above to unlock mini-sets.
                     </p>
                   )}
 
                   {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
-                      <label className="block text-xs text-slate-300 font-bold mb-2">
+                      <label className="block text-xs text-brand-text font-bold mb-2">
                         Select Reps Completed for Mini-Set #{miniSets.length + 1}:
                       </label>
 
@@ -1530,16 +1562,16 @@
                               onClick={() => handleSelectCard(reps)}
                               className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
                                 isSelected
-                                  ? 'bg-emerald-950/80 border-emerald-400 text-emerald-200 ring-2 ring-emerald-500/50'
-                                  : 'bg-slate-950 border-slate-800 hover:border-slate-700 text-slate-300'
+                                  ? 'bg-brand-base border-brand-cyan text-brand-text ring-1 ring-brand-cyan'
+                                  : 'bg-brand-base border-slate-800 hover:border-slate-700 text-brand-muted'
                               }`}
                             >
                               <div className="flex items-center gap-3">
                                 <div
                                   className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-sm ${
                                     isSelected
-                                      ? 'bg-emerald-500 text-slate-950'
-                                      : 'bg-slate-800 text-slate-400'
+                                      ? 'bg-brand-cyan text-brand-base'
+                                      : 'bg-slate-800 text-brand-muted'
                                   }`}
                                 >
                                   {reps}
@@ -1548,7 +1580,7 @@
                               </div>
 
                               {isSelected && (
-                                <span className="text-xs font-black text-emerald-400 uppercase tracking-wider bg-emerald-900/60 px-2.5 py-1 rounded border border-emerald-700">
+                                <span className="text-xs font-black text-brand-cyan uppercase tracking-wider bg-slate-900 px-2.5 py-1 rounded border border-brand-cyan/40">
                                   ✓ Selected
                                 </span>
                               )}
@@ -1561,14 +1593,14 @@
                         <button
                           type="button"
                           onClick={handleConfirmAndStartRest}
-                          className="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg shadow-emerald-950/30 mt-4"
+                          className="w-full py-3 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg shadow-cyan-950/30 mt-4"
                         >
                           {selectedReps >= 3
                             ? `Confirm ${selectedReps} Reps & Start 5-Breath Rest ➔`
                             : `Confirm ${selectedReps} Reps & Complete Exercise ➔`}
                         </button>
                       ) : (
-                        <p className="text-xs text-slate-500 text-center italic py-1">
+                        <p className="text-xs text-brand-muted text-center italic py-1">
                           Tap a card above to select your completed reps.
                         </p>
                       )}
@@ -1576,13 +1608,13 @@
                   )}
 
                   {isCompleted && (
-                    <div className="mt-4 bg-emerald-950/60 border border-emerald-600/40 p-4 rounded-lg text-center">
-                      <span className="text-xs font-bold text-emerald-400 block mb-1">✓ EXERCISE COMPLETE</span>
-                      <p className="text-xs text-slate-300">Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.</p>
+                    <div className="mt-4 bg-brand-base border border-brand-cyan/60 p-4 rounded-lg text-center">
+                      <span className="text-xs font-black text-brand-cyan block mb-1">✓ EXERCISE COMPLETE</span>
+                      <p className="text-xs text-brand-muted">Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.</p>
                       <button
                         type="button"
                         onClick={saveWorkout}
-                        className="mt-3 w-full py-2.5 bg-emerald-500 text-slate-950 font-black text-xs rounded-lg hover:bg-emerald-400 transition-colors uppercase tracking-wider"
+                        className="mt-3 w-full py-2.5 bg-brand-cyan text-brand-base font-black text-xs rounded-lg hover:bg-cyan-400 transition-colors uppercase tracking-wider"
                       >
                         SAVE TO HISTORY LOG
                       </button>
@@ -1593,26 +1625,26 @@
             ) : (
               <div className="space-y-3">
                 {history.length === 0 ? (
-                  <div className="text-center py-12 bg-slate-900 rounded-xl border border-slate-800">
-                    <p className="text-slate-500 text-sm font-semibold">No saved workouts yet.</p>
-                    <p className="text-xs text-slate-600 mt-1">Complete a Myo-Rep session to view history.</p>
+                  <div className="text-center py-12 bg-brand-surface rounded-xl border border-slate-700/50">
+                    <p className="text-brand-muted text-sm font-semibold">No saved workouts yet.</p>
+                    <p className="text-xs text-slate-500 mt-1">Complete a Myo-Rep session to view history.</p>
                   </div>
                 ) : (
                   history.map((log) => (
-                    <div key={log.id} className="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                    <div key={log.id} className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-bold text-sm text-slate-100">{log.exercise}</h4>
-                          <span className="text-xs text-slate-400">{log.date}</span>
+                          <h4 className="font-bold text-sm text-brand-text">{log.exercise}</h4>
+                          <span className="text-xs text-brand-muted">{log.date}</span>
                         </div>
-                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-brand-base text-brand-cyan border border-slate-800">
                           {log.setting}
                         </span>
                       </div>
-                      <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800/80">
-                        <span className="text-slate-400">Activation: <strong className="text-slate-200">{log.activationReps} reps</strong></span>
-                        <span className="text-slate-400">Mini-Sets: <strong className="text-emerald-400">[{log.miniSets.join(', ')}]</strong></span>
-                        <span className="text-slate-400">Total: <strong className="text-white">{log.totalReps}</strong></span>
+                      <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
+                        <span className="text-brand-muted">Activation: <strong className="text-brand-text">{log.activationReps} reps</strong></span>
+                        <span className="text-brand-muted">Mini-Sets: <strong className="text-brand-cyan font-mono">[{log.miniSets.join(', ')}]</strong></span>
+                        <span className="text-brand-muted">Total: <strong className="text-brand-text font-mono">{log.totalReps}</strong></span>
                       </div>
                     </div>
                   ))
