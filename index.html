@@ -367,11 +367,11 @@
                 <span class="text-base font-bold font-mono text-brand-amber" id="metric-mini-reps">0</span>
               </div>
               <div class="bg-slate-950 p-2.5 rounded-lg border border-brand-border/40">
-                <span class="text-[10px] text-brand-muted font-semibold block">Total Effective Volume</span>
+                <span class="text-[10px] text-brand-muted block">Total Effective Volume</span>
                 <span class="text-base font-bold font-mono text-brand-cyan" id="metric-total-reps">14 reps</span>
               </div>
               <div class="bg-slate-950 p-2.5 rounded-lg border border-brand-border/40">
-                <span class="text-[10px] text-brand-muted font-semibold block">Total Tonnage</span>
+                <span class="text-[10px] text-brand-muted block">Total Tonnage</span>
                 <span class="text-base font-bold font-mono text-emerald-400" id="metric-total-tonnage">1,938 lbs</span>
               </div>
             </div>
@@ -385,7 +385,7 @@
       </section>
     </div>
 
-    <!-- VIEW 2: MUSCLE GROUP EXPLORER & SCROLLING CATALOG VIEW -->
+    <!-- VIEW 2: MUSCLE GROUP EXPLORER & CLEAN SCROLLING LIST -->
     <div id="view-exercises" class="hidden space-y-6">
       
       <!-- Muscle Group Filter Header -->
@@ -395,7 +395,7 @@
             <i data-lucide="grid" class="w-5 h-5 text-brand-cyan"></i>
             Muscle Group Exercise Catalog
           </h2>
-          <p class="text-xs text-brand-muted">Select a muscle group to view all available exercises in a scrolling list.</p>
+          <p class="text-xs text-brand-muted">Select a muscle group to scroll through available exercises.</p>
         </div>
 
         <!-- Category Selector Pills -->
@@ -410,9 +410,9 @@
         </div>
       </div>
 
-      <!-- Single Vertical Scrolling Container for Exercises -->
-      <div class="space-y-4 max-h-[72vh] overflow-y-auto pr-2" id="exercise-scroll-list">
-        <!-- Dynamically injected exercise cards with details, videos, & calibration trigger -->
+      <!-- Single Vertical Scrolling List Container for Exercises -->
+      <div class="space-y-3 max-h-[72vh] overflow-y-auto pr-2" id="exercise-scroll-list">
+        <!-- Dynamically injected simplified exercise list rows -->
       </div>
     </div>
 
@@ -1049,7 +1049,7 @@
     }
 
     // ==========================================
-    // MUSCLE GROUP CATALOG (SCROLLING LIST VIEW)
+    // MUSCLE GROUP CATALOG (CLEAN SCROLLING ROW LIST)
     // ==========================================
     function filterExercises(category) {
       state.currentCategoryFilter = category;
@@ -1080,44 +1080,29 @@
       }
 
       filtered.forEach(ex => {
-        const card = document.createElement('div');
-        card.className = 'bg-brand-card border border-brand-border/80 hover:border-brand-cyan/60 rounded-xl p-5 shadow-lg space-y-3 transition';
+        const item = document.createElement('div');
+        item.onclick = () => selectExercise(ex.id);
+        item.className = 'bg-brand-card border border-brand-border/80 hover:border-brand-cyan/60 rounded-xl p-4 shadow-sm transition cursor-pointer flex items-center justify-between gap-4 group';
         
-        card.innerHTML = `
-          <div class="flex justify-between items-start">
+        item.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20 shrink-0">${ex.category}</span>
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/20">${ex.category}</span>
-              <h3 class="text-base font-bold text-white mt-1.5">${ex.name}</h3>
+              <h3 class="text-sm font-bold text-white group-hover:text-brand-cyan transition leading-tight">${ex.name}</h3>
+              <p class="text-xs text-brand-muted mt-0.5 line-clamp-1">${ex.desc}</p>
             </div>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
             <span class="text-xs font-mono text-brand-amber font-bold bg-slate-950 px-2.5 py-1 rounded border border-brand-border/40">Rec Level ${ex.defaultLevel}</span>
-          </div>
-
-          <p class="text-xs text-brand-muted leading-relaxed">${ex.desc}</p>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1">
-            <div class="bg-slate-950 p-2 rounded border border-brand-border/40">
-              <span class="text-[10px] text-brand-muted block font-semibold">Primary Target</span>
-              <span class="font-semibold text-slate-200">${ex.primaryTarget}</span>
-            </div>
-            <div class="bg-slate-950 p-2 rounded border border-brand-border/40">
-              <span class="text-[10px] text-brand-muted block font-semibold">Band Setup</span>
-              <span class="font-semibold text-brand-amber">${ex.recommendedBands.join(', ')} Band</span>
-            </div>
-          </div>
-
-          <div class="flex items-center justify-between pt-2 border-t border-brand-border/60 gap-3">
             ${ex.videoUrl ? `
-              <a href="${ex.videoUrl}" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/80 px-3 py-1.5 rounded-lg border border-sky-800 flex items-center gap-1.5 shrink-0">
-                <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-500 fill-current"></i> Video (${ex.timestampLabel}) ➔
+              <a href="${ex.videoUrl}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="text-xs font-bold text-sky-400 hover:text-sky-300 bg-sky-950/80 px-2.5 py-1.5 rounded-lg border border-sky-800 flex items-center gap-1 transition">
+                <i data-lucide="youtube" class="w-3.5 h-3.5 text-rose-500 fill-current"></i> Video (${ex.timestampLabel})
               </a>
-            ` : '<div></div>'}
-            
-            <button onclick="selectExercise('${ex.id}')" class="px-4 py-2 bg-gradient-to-r from-brand-cyan to-blue-600 text-slate-950 font-bold text-xs rounded-lg hover:brightness-110 transition shadow-md flex items-center gap-1.5">
-              <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Load into Calibration Engine
-            </button>
+            ` : ''}
           </div>
         `;
-        scrollContainer.appendChild(card);
+        scrollContainer.appendChild(item);
       });
 
       lucide.createIcons();
