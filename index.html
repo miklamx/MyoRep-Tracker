@@ -49,14 +49,25 @@
 
       const MUSCLE_GROUPS = ['ALL', 'HIP MOBILITY', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
 
+      const TG_FIT_LEVELS = [
+        { level: 1, angle: '5.2°', bodyWeightPct: 0.38 },
+        { level: 2, angle: '8.0°', bodyWeightPct: 0.45 },
+        { level: 3, angle: '10.9°', bodyWeightPct: 0.52 },
+        { level: 4, angle: '13.8°', bodyWeightPct: 0.58 },
+        { level: 5, angle: '16.7°', bodyWeightPct: 0.63 },
+        { level: 6, angle: '19.6°', bodyWeightPct: 0.68 },
+        { level: 7, angle: '22.6°', bodyWeightPct: 0.72 },
+        { level: 8, angle: '25.8°', bodyWeightPct: 0.76 }
+      ];
+
       const BAND_OPTIONS = [
-        { id: 'none', label: 'None (Total Gym Only)' },
-        { id: 'orange', label: '#0 Orange (2–15 lbs)' },
-        { id: 'purple', label: '#1 Purple (5–35 lbs)' },
-        { id: 'red', label: '#2 Red (10–50 lbs)' },
-        { id: 'blue', label: '#3 Blue (25–80 lbs)' },
-        { id: 'green', label: '#4 Green (50–120 lbs)' },
-        { id: 'black', label: '#5 Black (60–150 lbs)' }
+        { id: 'none', label: 'None (Total Gym Only)', tension: 0 },
+        { id: 'orange', label: '#0 Orange (2–15 lbs)', tension: 15 },
+        { id: 'purple', label: '#1 Purple (5–35 lbs)', tension: 35 },
+        { id: 'red', label: '#2 Red (10–50 lbs)', tension: 50 },
+        { id: 'blue', label: '#3 Blue (25–80 lbs)', tension: 80 },
+        { id: 'green', label: '#4 Green (50–120 lbs)', tension: 120 },
+        { id: 'black', label: '#5 Black (60–150 lbs)', tension: 150 }
       ];
 
       const EXERCISES = [
@@ -1070,7 +1081,7 @@
           equipment: 'Total Gym & Press Bar',
           description: 'Attach straight press bar to cables, execute heavy loaded curls with forced reps and drop-sets.',
           defaultLevel: 'Level 6',
-          videoUrl: 'https://youtu.be/MboA9Hzneg4?t=600s',
+          videoUrl: 'https://youtu.be/MboA9Hzneg4?t=1000s',
           timestampLabel: '10:00'
         },
         {
@@ -1163,6 +1174,7 @@
       function App() {
         const [activeTab, setActiveTab] = useState('workout');
         
+        const [userBodyWeight, setUserBodyWeight] = useState(180);
         const [selectedMuscle, setSelectedMuscle] = useState('ALL');
         const [selectedExerciseId, setSelectedExerciseId] = useState(EXERCISES[0].id);
         const [tgLevel, setTgLevel] = useState(5);
@@ -1184,6 +1196,12 @@
           : EXERCISES.filter(ex => ex.category === selectedMuscle);
 
         const exercise = EXERCISES.find((item) => item.id === selectedExerciseId) || filteredExercises[0] || EXERCISES[0];
+        const selectedBandObj = BAND_OPTIONS.find(b => b.id === selectedBand) || BAND_OPTIONS[0];
+
+        // Calculated effective working load
+        const activeLvlObj = TG_FIT_LEVELS.find(l => l.level === tgLevel) || TG_FIT_LEVELS[4];
+        const currentGlideboardLoad = Math.round(userBodyWeight * activeLvlObj.bodyWeightPct);
+        const currentTotalWorkingLoad = currentGlideboardLoad + selectedBandObj.tension;
 
         useEffect(() => {
           try {
@@ -1301,13 +1319,13 @@
         };
 
         const saveWorkout = () => {
-          const bandLabel = BAND_OPTIONS.find(b => b.id === selectedBand)?.label || 'None';
           const newEntry = {
             id: Date.now(),
             date: new Date().toLocaleString(),
             exercise: exercise.name,
             equipment: exercise.equipment,
-            setting: `TG Level ${tgLevel} + Band: ${bandLabel}`,
+            setting: `TG Level ${tgLevel} + Band: ${selectedBandObj.label}`,
+            workingLoad: `${currentTotalWorkingLoad} lbs`,
             activationReps,
             miniSets,
             totalReps: activationReps + miniSets.reduce((sum, value) => sum + value, 0)
@@ -1321,7 +1339,7 @@
 
         return (
           <div className="max-w-md mx-auto p-4 pb-20">
-            {/* Header updated with KineticForge Branding */}
+            {/* Header with KineticForge Branding */}
             <header className="mb-6 border-b border-brand-surface pb-4">
               <div className="flex justify-between items-center">
                 <div>
@@ -1417,24 +1435,42 @@
                   </div>
                 </div>
 
-                {/* Step 3: Equipment Configuration */}
+                {/* STEP 3: Configure Resistance Load & Incline vs Band Load Chart */}
                 <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-4">
                   <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
-                    Step 3: Configure Resistance Load
+                    Step 3: Configure Resistance Load & Intersect Graph
                   </label>
+
+                  {/* Body weight calibration */}
+                  <div className="flex justify-between items-center bg-brand-base p-2.5 rounded-lg border border-slate-800">
+                    <span className="text-xs font-bold text-brand-muted">User Body Weight:</span>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        value={userBodyWeight}
+                        onChange={(e) => setUserBodyWeight(Math.max(80, Number(e.target.value) || 180))}
+                        className="w-16 bg-slate-900 border border-slate-700 text-center rounded text-xs font-mono font-bold text-brand-cyan p-1"
+                      />
+                      <span className="text-xs text-brand-muted font-bold">lbs</span>
+                    </div>
+                  </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-xs font-bold text-brand-text">Total Gym FIT Incline Level:</span>
-                      <span className="text-xs font-black text-brand-cyan">Level {tgLevel}</span>
+                      <span className="text-xs font-mono font-black text-brand-amber">
+                        Level {tgLevel} ({Math.round(activeLvlObj.bodyWeightPct * 100)}% BW = {currentGlideboardLoad} lbs)
+                      </span>
                     </div>
                     <select
                       value={tgLevel}
                       onChange={(e) => setTgLevel(Number(e.target.value))}
                       className="w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text"
                     >
-                      {[1, 2, 3, 4, 5, 6, 7, 8].map((lvl) => (
-                        <option key={lvl} value={lvl}>Level {lvl} Incline</option>
+                      {TG_FIT_LEVELS.map((lvl) => (
+                        <option key={lvl.level} value={lvl.level}>
+                          Level {lvl.level} ({lvl.angle} Incline - {Math.round(lvl.bodyWeightPct * 100)}% BW)
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -1442,7 +1478,9 @@
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <span className="text-xs font-bold text-brand-text">Serious Steel Band Overlay:</span>
-                      <span className="text-xs font-black text-brand-cyan">41 inch Loop Band</span>
+                      <span className="text-xs font-mono font-black text-brand-cyan">
+                        +{selectedBandObj.tension} lbs Peak Tension
+                      </span>
                     </div>
                     <select
                       value={selectedBand}
@@ -1455,34 +1493,86 @@
                     </select>
                   </div>
 
-                  <div className="border-t border-slate-800 pt-3">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-bold text-brand-text">ACTIVATION SET (RPE 8)</span>
-                      <span className="text-xs text-brand-muted">Target: 12-15 Reps</span>
-                    </div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <input
-                        type="number"
-                        min="1"
-                        max="30"
-                        value={activationReps}
-                        disabled={activationDone}
-                        onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
-                        className="w-20 bg-brand-base border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-brand-text disabled:opacity-50"
-                      />
-                      <span className="text-xs text-brand-muted flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
+                  {/* Effective Lifted Resistance Intersection Graph */}
+                  <div className="bg-brand-base p-3.5 rounded-xl border border-slate-800 space-y-2">
+                    <div className="flex justify-between items-center text-[11px] font-mono">
+                      <span className="text-brand-muted uppercase font-bold">Effective Load Lifted Graph</span>
+                      <span className="text-brand-cyan font-black text-xs">Total: {currentTotalWorkingLoad} lbs</span>
                     </div>
 
-                    {!activationDone && (
-                      <button
-                        type="button"
-                        onClick={handleStartActivationRest}
-                        className="w-full py-2.5 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-lg transition-all uppercase tracking-wider"
-                      >
-                        Complete Activation & Start 5-Breath Rest ➔
-                      </button>
-                    )}
+                    <div className="relative h-28 w-full flex items-end justify-between pt-4 px-1 border-b border-slate-800 gap-1">
+                      {TG_FIT_LEVELS.map((l) => {
+                        const boardLoad = Math.round(userBodyWeight * l.bodyWeightPct);
+                        const totalLoad = boardLoad + selectedBandObj.tension;
+                        const isSelected = l.level === tgLevel;
+                        const barHeightPct = Math.min(100, Math.max(15, (totalLoad / 300) * 100));
+
+                        return (
+                          <div
+                            key={l.level}
+                            onClick={() => setTgLevel(l.level)}
+                            className="flex-1 flex flex-col items-center h-full justify-end cursor-pointer group"
+                          >
+                            <span className="text-[9px] font-mono mb-1 text-slate-400 group-hover:text-brand-cyan">
+                              {totalLoad}
+                            </span>
+                            <div
+                              className={`w-full rounded-t transition-all duration-300 ${
+                                isSelected
+                                  ? 'bg-brand-cyan shadow-md shadow-cyan-500/30'
+                                  : 'bg-slate-800 hover:bg-slate-700'
+                              }`}
+                              style={{ height: `${barHeightPct}%` }}
+                            />
+                            <span className={`text-[9px] font-mono mt-1 ${isSelected ? 'text-brand-cyan font-bold' : 'text-slate-500'}`}>
+                              L{l.level}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="flex justify-between items-center text-[10px] text-brand-muted font-mono pt-1">
+                      <span>Glideboard ({currentGlideboardLoad} lbs)</span>
+                      <span>+</span>
+                      <span>Band Overlay ({selectedBandObj.tension} lbs)</span>
+                      <span>=</span>
+                      <span className="text-brand-cyan font-bold">{currentTotalWorkingLoad} lbs</span>
+                    </div>
                   </div>
+                </div>
+
+                {/* STEP 4: Activation Set (RPE 8) */}
+                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-brand-muted uppercase tracking-wider">
+                      Step 4: Activation Set (RPE 8)
+                    </label>
+                    <span className="text-xs text-brand-muted">Target: 12-15 Reps</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      min="1"
+                      max="30"
+                      value={activationReps}
+                      disabled={activationDone}
+                      onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
+                      className="w-20 bg-brand-base border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-brand-text disabled:opacity-50"
+                    />
+                    <span className="text-xs text-brand-muted flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
+                  </div>
+
+                  {!activationDone && (
+                    <button
+                      type="button"
+                      onClick={handleStartActivationRest}
+                      className="w-full py-2.5 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-md shadow-cyan-950/20"
+                    >
+                      Complete Activation & Start 5-Breath Rest ➔
+                    </button>
+                  )}
                 </div>
 
                 {/* Rest Timer */}
@@ -1511,10 +1601,10 @@
                   </div>
                 )}
 
-                {/* Step 4: Mini-Sets */}
+                {/* STEP 5: Cluster Mini-Sets */}
                 <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
                   <h3 className="text-xs font-bold text-brand-muted mb-3 uppercase tracking-wider">
-                    Step 4: Cluster Mini-Sets (3–5 Reps)
+                    Step 5: Cluster Mini-Sets (3–5 Reps)
                   </h3>
 
                   <div className="grid grid-cols-5 gap-2 mb-4">
@@ -1537,7 +1627,7 @@
 
                   {!activationDone && (
                     <p className="text-xs text-brand-amber text-center font-semibold bg-amber-950/30 p-2 rounded border border-amber-800/40">
-                      ⚠️ Complete activation set above to unlock mini-sets.
+                      ⚠️ Complete activation set in Step 4 above to unlock mini-sets.
                     </p>
                   )}
 
@@ -1638,7 +1728,7 @@
                           <span className="text-xs text-brand-muted">{log.date}</span>
                         </div>
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-brand-base text-brand-cyan border border-slate-800">
-                          {log.setting}
+                          {log.workingLoad || log.setting}
                         </span>
                       </div>
                       <div className="flex items-center justify-between text-xs pt-2 border-t border-slate-800">
