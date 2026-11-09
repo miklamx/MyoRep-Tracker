@@ -47,7 +47,7 @@
 
       const STORAGE_KEY = 'myorep-history';
 
-      const MUSCLE_GROUPS = ['ALL', 'HIP MOBILITY', 'BACK MOBILITY', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
+      const MUSCLE_GROUPS = ['ALL', 'TOTAL BODY RELEASE', 'HIP MOBILITY', 'BACK MOBILITY', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
 
       const TG_FIT_LEVELS = [
         { level: 1, angle: '5.2°', bodyWeightPct: 0.38 },
@@ -72,7 +72,161 @@
 
       const EXERCISES = [
         // ==========================================
-        // 1. HIP MOBILITY (17 Exercises)
+        // 1. TOTAL BODY RELEASE (15 Exercises - Sandy Leo)
+        // ==========================================
+        {
+          id: 'tbr-thoracic-softball-release',
+          name: 'Thoracic Spine Decompression & Pec Opener (Softball Supported) [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym & Soft Ball',
+          description: 'Place soft ball between shoulder blades at base of board, open knees, and slowly fold backward with arms open to reverse thoracic curvature.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=100s',
+          timestampLabel: '1:40'
+        },
+        {
+          id: 'tbr-ql-long-back-decompression',
+          name: 'Supine QL & Long Back Muscle Decompression Stretch [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Lie supine at base of board, pull one ankle back toward glutes while extending opposite arm overhead to open QL and hip flexors.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=200s',
+          timestampLabel: '3:20'
+        },
+        {
+          id: 'tbr-foot-arch-calf-pump',
+          name: 'Foot Arch Activation & Calf Achilles Pump [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Grip squat stand with toes to activate foot arch tendons, then slowly drop heels up and down to pump calves and Achilles.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=374s',
+          timestampLabel: '6:14'
+        },
+        {
+          id: 'tbr-heel-click-abductor-turnon',
+          name: 'Heel-Click Gluteus Medius & Abductor Activation [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Click heels together with toes turned outward, open knees, and press board out to turn on gluteus medius and hip abductors.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=463s',
+          timestampLabel: '7:43'
+        },
+        {
+          id: 'tbr-hip-stir-pot-hug',
+          name: 'Hip Joint Stir-the-Pot Mobilizer & Hug [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Hug single knee to chest on glideboard and perform 5 controlled circles each direction driving purely from the hip socket.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=530s',
+          timestampLabel: '8:50'
+        },
+        {
+          id: 'tbr-hamstring-sciatic-cross',
+          name: 'Hamstring Dynamic Flex & Sciatic Nerve Cross Stretch [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Extend leg straight up flexing foot, then cross ankle over toward opposite shoulder to relieve sciatic nerve entrapment.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=552s',
+          timestampLabel: '9:12'
+        },
+        {
+          id: 'tbr-seated-forward-fold',
+          name: 'Seated Glideboard Forward Fold Decompression [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Sit forward on closed glideboard with straight legs, reach for toes and hang torso forward to decompress lower back.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=689s',
+          timestampLabel: '11:29'
+        },
+        {
+          id: 'tbr-seated-underarm-c-tuck',
+          name: 'Seated Under-Arm Spinal Articulation C-Tuck [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Seated with feet on struts, hold toe bar with hands inside knees, tuck pelvis into deep C-curve and roll back.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=720s',
+          timestampLabel: '12:00'
+        },
+        {
+          id: 'tbr-seated-saw-rotation',
+          name: 'Seated Pilates Saw Spinal Rotation [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Seated posture, rotate entire upper torso, tuck chin, and roll forward over legs to stretch lower back and lateral hamstrings.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=762s',
+          timestampLabel: '12:42'
+        },
+        {
+          id: 'tbr-cervical-thoracic-headpress',
+          name: 'Cervical-Thoracic Neck Rotation & Head Press [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Turn head side-to-side looking over palms, then clasp hands behind head and push skull into hands to strengthen deep neck flexors.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=817s',
+          timestampLabel: '13:37'
+        },
+        {
+          id: 'tbr-posture-arms-behind-finger-open',
+          name: 'Posture Muscle Finger-Open Extension (Behind Body) [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Bring open arms behind body line with splayed fingers to force scapular retraction and open chest pectorals.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=894s',
+          timestampLabel: '14:54'
+        },
+        {
+          id: 'tbr-mermaid-ql-side-reach',
+          name: 'Seated Glideboard Mermaid QL & Oblique Side Reach [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Sit side-saddle in mermaid position, press palm against squat bar, and reach opposite arm overhead past ear to lengthen QL.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=932s',
+          timestampLabel: '15:32'
+        },
+        {
+          id: 'tbr-decline-footholder-inverted-hang',
+          name: 'Decline Foot-Holder Inverted Spinal Traction [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym (Foot Holder)',
+          description: 'Anchor feet in top foot holders, soft knees, roll down in full decline hang to decompress lumbar spine with side wrist pulls.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=1102s',
+          timestampLabel: '18:22'
+        },
+        {
+          id: 'tbr-tva-ccurve-rollback',
+          name: 'Transverse Abdominis (TVA) C-Curve Roll-Down Activation [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Seated on glideboard with bent knees, tilt pelvis into C-curve and slowly roll lower spine down with deep exhalations.',
+          defaultLevel: 'Level 2',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=1219s',
+          timestampLabel: '20:19'
+        },
+        {
+          id: 'tbr-seated-cross-knee-glute-release',
+          name: 'Seated Crossed-Leg Hip External Rotator Release [Sandy Leo]',
+          category: 'TOTAL BODY RELEASE',
+          equipment: 'Total Gym',
+          description: 'Seated upright, cross ankle over knee and apply gentle downward pressure on knee to release tight outer hips and glutes.',
+          defaultLevel: 'Level 1',
+          videoUrl: 'https://youtu.be/MUIVSiBz0lk?t=1304s',
+          timestampLabel: '21:44'
+        },
+
+        // ==========================================
+        // 2. HIP MOBILITY (17 Exercises)
         // ==========================================
         {
           id: 'mob-glute-bridge-squat',
@@ -246,7 +400,7 @@
         },
 
         // ==========================================
-        // 2. BACK MOBILITY (14 Exercises)
+        // 3. BACK MOBILITY (14 Exercises)
         // ==========================================
         {
           id: 'mob-pelvic-c-curve',
@@ -390,7 +544,7 @@
         },
 
         // ==========================================
-        // 3. CHEST (14 Exercises)
+        // 4. CHEST (14 Exercises)
         // ==========================================
         {
           id: 'tg-chest-skyler-incline-fly',
@@ -534,7 +688,7 @@
         },
 
         // ==========================================
-        // 4. BACK (27 Exercises)
+        // 5. BACK (27 Exercises)
         // ==========================================
         {
           id: 'tg-back-hr-back-ext-iyt',
@@ -808,7 +962,7 @@
         },
 
         // ==========================================
-        // 5. LEGS (23 Exercises)
+        // 6. LEGS (23 Exercises)
         // ==========================================
         {
           id: 'tg-legs-hr-side-lying-squat',
@@ -1042,7 +1196,7 @@
         },
 
         // ==========================================
-        // 6. SHOULDERS (5 Exercises)
+        // 7. SHOULDERS (5 Exercises)
         // ==========================================
         {
           id: 'tg-sh-hr-inverted-press',
@@ -1096,7 +1250,7 @@
         },
 
         // ==========================================
-        // 7. ARMS (10 Exercises)
+        // 8. ARMS (10 Exercises)
         // ==========================================
         {
           id: 'tg-arm-hr-alt-curl',
