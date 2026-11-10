@@ -70,6 +70,12 @@
         { id: 'black', label: '#5 Black (60–150 lbs)', tension: 150 }
       ];
 
+      function getYouTubeId(url) {
+        if (!url) return null;
+        const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/))([\w-]{11})/);
+        return match ? match[1] : null;
+      }
+
       const EXERCISES = [
         // ==========================================
         // 1. TOTAL BODY RELEASE (15 Exercises - Sandy Leo)
@@ -1493,9 +1499,8 @@
           resetSession();
         };
 
-        const handleExerciseChange = (event) => {
-          const nextId = event.target.value;
-          setSelectedExerciseId(nextId);
+        const handleSelectExercise = (id) => {
+          setSelectedExerciseId(id);
           resetSession();
         };
 
@@ -1616,29 +1621,75 @@
                   </div>
                 </div>
 
-                {/* Step 2: Exercise Movement Selector + Timestamped Video Link */}
-                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
-                  <label className="block text-xs font-bold text-brand-muted mb-2 uppercase tracking-wider">
-                    Step 2: Choose Exercise Movement ({filteredExercises.length} Available)
-                  </label>
-                  <select
-                    className="w-full bg-brand-base border border-slate-700 rounded-lg p-2.5 text-sm font-semibold text-brand-text focus:outline-none focus:border-brand-cyan"
-                    value={selectedExerciseId}
-                    onChange={handleExerciseChange}
-                  >
-                    {filteredExercises.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
+                {/* Step 2: Visual Grid Picker with YouTube Video Thumbnails */}
+                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
+                      Step 2: Choose Exercise Movement
+                    </label>
+                    <span className="text-[11px] font-bold text-brand-cyan">
+                      {filteredExercises.length} Available
+                    </span>
+                  </div>
 
-                  <div className="mt-3 bg-brand-base p-3 rounded-lg border border-slate-800 space-y-2">
+                  {/* 2-Column Scrollable Thumbnail Grid */}
+                  <div className="grid grid-cols-2 gap-2.5 max-h-72 overflow-y-auto p-1 pr-1.5">
+                    {filteredExercises.map((ex) => {
+                      const vId = getYouTubeId(ex.videoUrl);
+                      const thumbUrl = vId ? `https://img.youtube.com/vi/${vId}/hqdefault.jpg` : '';
+                      const isSelected = ex.id === exercise.id;
+
+                      return (
+                        <div
+                          key={ex.id}
+                          onClick={() => handleSelectExercise(ex.id)}
+                          className={`cursor-pointer rounded-xl border overflow-hidden p-2 transition-all flex flex-col justify-between ${
+                            isSelected
+                              ? 'bg-brand-base border-brand-cyan ring-2 ring-brand-cyan/60 shadow-lg shadow-cyan-950/40'
+                              : 'bg-brand-base border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          <div className="relative rounded-lg overflow-hidden mb-2 bg-slate-900 aspect-video">
+                            {thumbUrl ? (
+                              <img
+                                src={thumbUrl}
+                                alt={ex.name}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-slate-600 text-xs font-bold">
+                                No Video
+                              </div>
+                            )}
+
+                            {ex.timestampLabel && (
+                              <span className="absolute bottom-1 right-1 bg-slate-950/90 text-brand-cyan text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border border-slate-800">
+                                {ex.timestampLabel}
+                              </span>
+                            )}
+
+                            {isSelected && (
+                              <div className="absolute top-1 left-1 bg-brand-cyan text-brand-base text-[9px] font-black px-1.5 py-0.5 rounded uppercase">
+                                Active
+                              </div>
+                            )}
+                          </div>
+
+                          <h4 className={`text-xs font-bold line-clamp-2 leading-tight ${isSelected ? 'text-brand-cyan' : 'text-brand-text'}`}>
+                            {ex.name}
+                          </h4>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Active Exercise Description & Direct Video Guide Link */}
+                  <div className="bg-brand-base p-3 rounded-lg border border-slate-800 space-y-2">
                     <p className="text-xs text-brand-muted italic">
                       💡 {exercise.description}
                     </p>
 
-                    {/* Timestamped Video Link Button */}
                     {exercise.videoUrl && (
                       <a
                         href={exercise.videoUrl}
