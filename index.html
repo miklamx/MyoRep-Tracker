@@ -34,6 +34,17 @@
         }
       }
     </script>
+
+    <style>
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
     
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
@@ -46,6 +57,7 @@
       const { useState, useEffect, useRef } = React;
 
       const STORAGE_KEY = 'myorep-history';
+      const MUTE_STORAGE_KEY = 'myorep-muted';
 
       const MUSCLE_GROUPS = ['ALL', 'TOTAL BODY RELEASE', 'HIP MOBILITY', 'BACK MOBILITY', 'CHEST', 'BACK', 'LEGS', 'SHOULDERS', 'ARMS'];
 
@@ -1399,7 +1411,8 @@
         return window.__myorepAudioContext;
       }
 
-      function playChime(freq = 440, type = 'sine', duration = 0.15) {
+      function playChime(freq = 440, type = 'sine', duration = 0.15, isMuted = false) {
+        if (isMuted) return;
         try {
           const ctx = getAudioContext();
           if (!ctx) return;
@@ -1420,13 +1433,23 @@
         } catch (e) {}
       }
 
-      function playGoChime() {
-        playChime(587.33, 'triangle', 0.2);
-        setTimeout(() => playChime(880, 'sine', 0.4), 150);
+      function playGoChime(isMuted = false) {
+        if (isMuted) return;
+        playChime(587.33, 'triangle', 0.2, isMuted);
+        setTimeout(() => playChime(880, 'sine', 0.4, isMuted), 150);
       }
+
+      const FOCUS_RING = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-base';
 
       function App() {
         const [activeTab, setActiveTab] = useState('workout');
+        const [isMuted, setIsMuted] = useState(() => {
+          try {
+            return localStorage.getItem(MUTE_STORAGE_KEY) === 'true';
+          } catch (e) {
+            return false;
+          }
+        });
         
         const [userBodyWeightStr, setUserBodyWeightStr] = useState('180');
         const [selectedMuscle, setSelectedMuscle] = useState('ALL');
@@ -1477,6 +1500,12 @@
         }, [history]);
 
         useEffect(() => {
+          try {
+            localStorage.setItem(MUTE_STORAGE_KEY, String(isMuted));
+          } catch (e) {}
+        }, [isMuted]);
+
+        useEffect(() => {
           return () => {
             if (timerRef.current) clearTimeout(timerRef.current);
           };
@@ -1488,7 +1517,7 @@
           if (restTimer <= 0) {
             setIsResting(false);
             setRestTimer(0);
-            playGoChime();
+            playGoChime(isMuted);
             return;
           }
 
@@ -1502,13 +1531,13 @@
               timerRef.current = null;
             }
           };
-        }, [isResting, restTimer]);
+        }, [isResting, restTimer, isMuted]);
 
         useEffect(() => {
           if (isResting && restTimer > 0 && restTimer % 3 === 0) {
-            playChime(350, 'sine', 0.1);
+            playChime(350, 'sine', 0.1, isMuted);
           }
-        }, [isResting, restTimer]);
+        }, [isResting, restTimer, isMuted]);
 
         const resetSession = () => {
           setMiniSets([]);
@@ -1538,7 +1567,7 @@
           setActivationDone(true);
           setRestTimer(15);
           setIsResting(true);
-          playChime(440, 'sine', 0.15);
+          playChime(440, 'sine', 0.15, isMuted);
         };
 
         const handleSelectCard = (val) => {
@@ -1558,19 +1587,19 @@
             setIsCompleted(true);
             setIsResting(false);
             setRestTimer(0);
-            playGoChime();
+            playGoChime(isMuted);
             return;
           }
 
           setRestTimer(15);
           setIsResting(true);
-          playChime(440, 'sine', 0.15);
+          playChime(440, 'sine', 0.15, isMuted);
         };
 
         const handleSkipRest = () => {
           setIsResting(false);
           setRestTimer(0);
-          playGoChime();
+          playGoChime(isMuted);
         };
 
         const saveWorkout = () => {
@@ -1594,96 +1623,143 @@
 
         return (
           <div className="max-w-md mx-auto p-4 pb-20">
-            {/* Header with KineticForge Branding */}
+            {/* Header with KineticForge Branding & Mute Control */}
             <header className="mb-6 border-b border-brand-surface pb-4">
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-start gap-2">
                 <div>
                   <h1 className="text-2xl font-black tracking-tight text-brand-cyan">KINETICFORGE</h1>
                   <p className="text-xs text-brand-muted">Total Gym FIT + Serious Steel Engine</p>
                 </div>
-                <span className="text-xs font-bold px-2.5 py-1 rounded bg-slate-900 text-brand-amber border border-brand-amber/40">
-                  RPE 8 Protocol
-                </span>
+                <div className="flex flex-col items-end gap-1.5">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded bg-slate-900 text-brand-amber border border-brand-amber/40">
+                    RPE 8 Protocol
+                  </span>
+                  <button
+                    type="button"
+                    aria-pressed={isMuted}
+                    aria-label={isMuted ? 'Unmute timer audio cues' : 'Mute timer audio cues'}
+                    onClick={() => setIsMuted((prev) => !prev)}
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-bold border transition-colors motion-reduce:transition-none ${FOCUS_RING} ${
+                      isMuted
+                        ? 'bg-rose-950/60 text-rose-300 border-rose-700/60 hover:bg-rose-950'
+                        : 'bg-slate-900 text-brand-cyan border-slate-700 hover:border-brand-cyan/50'
+                    }`}
+                  >
+                    {isMuted ? (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                        </svg>
+                        <span>Muted</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                        </svg>
+                        <span>Sound On</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </header>
 
             {/* Navigation Tabs */}
-            <div className="flex gap-2 mb-6 bg-brand-surface p-1 rounded-lg border border-slate-700/50">
+            <nav aria-label="Main navigation" className="flex gap-2 mb-6 bg-brand-surface p-1 rounded-lg border border-slate-700/50">
               <button
                 type="button"
+                aria-pressed={activeTab === 'workout'}
                 onClick={() => setActiveTab('workout')}
-                className={`flex-1 py-2 text-xs font-black rounded-md transition-all ${activeTab === 'workout' ? 'bg-brand-cyan text-brand-base shadow-md' : 'text-brand-muted hover:text-brand-text'}`}
+                className={`flex-1 py-2 text-xs font-black rounded-md transition-all motion-reduce:transition-none ${FOCUS_RING} ${
+                  activeTab === 'workout' ? 'bg-brand-cyan text-brand-base shadow-md' : 'text-brand-muted hover:text-brand-text'
+                }`}
               >
                 WORKOUT
               </button>
               <button
                 type="button"
+                aria-pressed={activeTab === 'history'}
                 onClick={() => setActiveTab('history')}
-                className={`flex-1 py-2 text-xs font-black rounded-md transition-all ${activeTab === 'history' ? 'bg-brand-cyan text-brand-base shadow-md' : 'text-brand-muted hover:text-brand-text'}`}
+                className={`flex-1 py-2 text-xs font-black rounded-md transition-all motion-reduce:transition-none ${FOCUS_RING} ${
+                  activeTab === 'history' ? 'bg-brand-cyan text-brand-base shadow-md' : 'text-brand-muted hover:text-brand-text'
+                }`}
               >
                 HISTORY ({history.length})
               </button>
-            </div>
+            </nav>
 
             {activeTab === 'workout' ? (
-              <div className="space-y-6">
+              <main className="space-y-6">
                 
                 {/* Step 1: Muscle Group Selection */}
-                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
-                  <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
+                <section aria-labelledby="step1-heading" className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
+                  <h2 id="step1-heading" className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
                     Step 1: Select Target Muscle Group
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {MUSCLE_GROUPS.map((group) => (
-                      <button
-                        key={group}
-                        type="button"
-                        onClick={() => handleMuscleChange(group)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all ${
-                          selectedMuscle === group
-                            ? 'bg-brand-cyan text-brand-base shadow-md'
-                            : 'bg-brand-base text-brand-muted border border-slate-800 hover:border-slate-700'
-                        }`}
-                      >
-                        {group}
-                      </button>
-                    ))}
+                  </h2>
+                  <div className="flex flex-wrap gap-1.5" role="group" aria-label="Target Muscle Groups">
+                    {MUSCLE_GROUPS.map((group) => {
+                      const isSelected = selectedMuscle === group;
+                      return (
+                        <button
+                          key={group}
+                          type="button"
+                          aria-pressed={isSelected}
+                          onClick={() => handleMuscleChange(group)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-black transition-all motion-reduce:transition-none ${FOCUS_RING} ${
+                            isSelected
+                              ? 'bg-brand-cyan text-brand-base shadow-md'
+                              : 'bg-brand-base text-brand-muted border border-slate-800 hover:border-slate-700'
+                          }`}
+                        >
+                          {group}
+                        </button>
+                      );
+                    })}
                   </div>
-                </div>
+                </section>
 
                 {/* Step 2: Visual Grid Picker with YouTube Video Thumbnails */}
-                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
+                <section aria-labelledby="step2-heading" className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
                   <div className="flex justify-between items-center">
-                    <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
+                    <h2 id="step2-heading" className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
                       Step 2: Choose Exercise Movement
-                    </label>
-                    <span className="text-[11px] font-bold text-brand-cyan">
+                    </h2>
+                    <span className="text-[11px] font-bold text-brand-cyan" aria-live="polite">
                       {filteredExercises.length} Available
                     </span>
                   </div>
 
-                  {/* 2-Column Scrollable Thumbnail Grid */}
-                  <div className="grid grid-cols-2 gap-2.5 max-h-72 overflow-y-auto p-1 pr-1.5">
+                  {/* 2-Column Scrollable Semantic Button Grid */}
+                  <div
+                    role="group"
+                    aria-label="Exercise movements"
+                    className="grid grid-cols-2 gap-2.5 max-h-72 overflow-y-auto p-1 pr-1.5"
+                  >
                     {filteredExercises.map((ex) => {
                       const vId = getYouTubeId(ex.videoUrl);
                       const thumbUrl = vId ? `https://img.youtube.com/vi/${vId}/hqdefault.jpg` : '';
                       const isSelected = ex.id === exercise.id;
 
                       return (
-                        <div
+                        <button
                           key={ex.id}
+                          type="button"
+                          aria-pressed={isSelected}
                           onClick={() => handleSelectExercise(ex.id)}
-                          className={`cursor-pointer rounded-xl border overflow-hidden p-2 transition-all flex flex-col justify-between ${
+                          className={`text-left cursor-pointer rounded-xl border overflow-hidden p-2 transition-all motion-reduce:transition-none flex flex-col justify-between ${FOCUS_RING} ${
                             isSelected
                               ? 'bg-brand-base border-brand-cyan ring-2 ring-brand-cyan/60 shadow-lg shadow-cyan-950/40'
                               : 'bg-brand-base border-slate-800 hover:border-slate-700'
                           }`}
                         >
-                          <div className="relative rounded-lg overflow-hidden mb-2 bg-slate-900 aspect-video">
+                          <div className="relative w-full rounded-lg overflow-hidden mb-2 bg-slate-900 aspect-video">
                             {thumbUrl ? (
                               <img
                                 src={thumbUrl}
-                                alt={ex.name}
+                                alt=""
+                                aria-hidden="true"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
                               />
@@ -1700,16 +1776,16 @@
                             )}
 
                             {isSelected && (
-                              <div className="absolute top-1 left-1 bg-brand-cyan text-brand-base text-[9px] font-black px-1.5 py-0.5 rounded uppercase">
+                              <span className="absolute top-1 left-1 bg-brand-cyan text-brand-base text-[9px] font-black px-1.5 py-0.5 rounded uppercase">
                                 Active
-                              </div>
+                              </span>
                             )}
                           </div>
 
-                          <h4 className={`text-xs font-bold line-clamp-2 leading-tight ${isSelected ? 'text-brand-cyan' : 'text-brand-text'}`}>
+                          <span className={`text-xs font-bold line-clamp-2 leading-tight block ${isSelected ? 'text-brand-cyan' : 'text-brand-text'}`}>
                             {ex.name}
-                          </h4>
-                        </div>
+                          </span>
+                        </button>
                       );
                     })}
                   </div>
@@ -1725,28 +1801,31 @@
                         href={exercise.videoUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-cyan hover:underline bg-brand-surface px-2.5 py-1.5 rounded border border-slate-700 transition-colors"
+                        className={`inline-flex items-center gap-1.5 text-xs font-bold text-brand-cyan hover:underline bg-brand-surface px-2.5 py-1.5 rounded border border-slate-700 transition-colors motion-reduce:transition-none ${FOCUS_RING}`}
                       >
-                        <svg className="w-3.5 h-3.5 fill-current text-rose-500" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 fill-current text-rose-500" viewBox="0 0 24 24" aria-hidden="true">
                           <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
                         </svg>
                         <span>Watch Video Form Guide ({exercise.timestampLabel}) ➔</span>
                       </a>
                     )}
                   </div>
-                </div>
+                </section>
 
                 {/* STEP 3: Configure Resistance Load & Incline vs Band Load Chart */}
-                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-4">
-                  <label className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
+                <section aria-labelledby="step3-heading" className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-4">
+                  <h2 id="step3-heading" className="block text-xs font-bold text-brand-muted uppercase tracking-wider">
                     Step 3: Configure Resistance Load & Intersect Graph
-                  </label>
+                  </h2>
 
                   {/* Body weight calibration */}
                   <div className="flex justify-between items-center bg-brand-base p-2.5 rounded-lg border border-slate-800">
-                    <span className="text-xs font-bold text-brand-muted">User Body Weight:</span>
+                    <label htmlFor="user-bodyweight-input" className="text-xs font-bold text-brand-muted">
+                      User Body Weight:
+                    </label>
                     <div className="flex items-center gap-1">
                       <input
+                        id="user-bodyweight-input"
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
@@ -1758,7 +1837,7 @@
                           }
                         }}
                         placeholder="180"
-                        className="w-16 bg-slate-900 border border-slate-700 text-center rounded text-xs font-mono font-bold text-brand-cyan p-1 focus:outline-none focus:border-brand-cyan"
+                        className={`w-16 bg-slate-900 border border-slate-700 text-center rounded text-xs font-mono font-bold text-brand-cyan p-1 ${FOCUS_RING}`}
                       />
                       <span className="text-xs text-brand-muted font-bold">lbs</span>
                     </div>
@@ -1766,15 +1845,18 @@
 
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-bold text-brand-text">Total Gym FIT Incline Level:</span>
+                      <label htmlFor="tg-incline-select" className="text-xs font-bold text-brand-text">
+                        Total Gym FIT Incline Level:
+                      </label>
                       <span className="text-xs font-mono font-black text-brand-amber">
                         Level {tgLevel} ({Math.round(activeLvlObj.bodyWeightPct * 100)}% BW = {currentGlideboardLoad} lbs)
                       </span>
                     </div>
                     <select
+                      id="tg-incline-select"
                       value={tgLevel}
                       onChange={(e) => setTgLevel(Number(e.target.value))}
-                      className="w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text"
+                      className={`w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text ${FOCUS_RING}`}
                     >
                       {TG_FIT_LEVELS.map((lvl) => (
                         <option key={lvl.level} value={lvl.level}>
@@ -1786,15 +1868,18 @@
 
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-bold text-brand-text">Serious Steel Band Overlay:</span>
+                      <label htmlFor="band-overlay-select" className="text-xs font-bold text-brand-text">
+                        Serious Steel Band Overlay:
+                      </label>
                       <span className="text-xs font-mono font-black text-brand-cyan">
                         +{selectedBandObj.tension} lbs Peak Tension
                       </span>
                     </div>
                     <select
+                      id="band-overlay-select"
                       value={selectedBand}
                       onChange={(e) => setSelectedBand(e.target.value)}
-                      className="w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text"
+                      className={`w-full bg-brand-base border border-slate-700 rounded-lg p-2 text-xs font-bold text-brand-text ${FOCUS_RING}`}
                     >
                       {BAND_OPTIONS.map((b) => (
                         <option key={b.id} value={b.id}>{b.label}</option>
@@ -1805,11 +1890,15 @@
                   {/* Effective Lifted Resistance Intersection Graph */}
                   <div className="bg-brand-base p-3.5 rounded-xl border border-slate-800 space-y-2">
                     <div className="flex justify-between items-center text-[11px] font-mono">
-                      <span className="text-brand-muted uppercase font-bold">Effective Load Lifted Graph</span>
+                      <span id="load-graph-label" className="text-brand-muted uppercase font-bold">Effective Load Lifted Graph</span>
                       <span className="text-brand-cyan font-black text-xs">Total: {currentTotalWorkingLoad} lbs</span>
                     </div>
 
-                    <div className="relative h-28 w-full flex items-end justify-between pt-4 px-1 border-b border-slate-800 gap-1">
+                    <div
+                      role="group"
+                      aria-labelledby="load-graph-label"
+                      className="relative h-28 w-full flex items-end justify-between pt-4 px-1 border-b border-slate-800 gap-1"
+                    >
                       {TG_FIT_LEVELS.map((l) => {
                         const boardLoad = Math.round(parsedBodyWeight * l.bodyWeightPct);
                         const totalLoad = boardLoad + selectedBandObj.tension;
@@ -1817,16 +1906,19 @@
                         const barHeightPct = Math.min(100, Math.max(15, (totalLoad / 300) * 100));
 
                         return (
-                          <div
+                          <button
                             key={l.level}
+                            type="button"
+                            aria-pressed={isSelected}
+                            aria-label={`Select Incline Level ${l.level}, total working load ${totalLoad} pounds`}
                             onClick={() => setTgLevel(l.level)}
-                            className="flex-1 flex flex-col items-center h-full justify-end cursor-pointer group"
+                            className={`flex-1 flex flex-col items-center h-full justify-end cursor-pointer group rounded-t ${FOCUS_RING}`}
                           >
                             <span className="text-[9px] font-mono mb-1 text-slate-400 group-hover:text-brand-cyan">
                               {totalLoad}
                             </span>
                             <div
-                              className={`w-full rounded-t transition-all duration-300 ${
+                              className={`w-full rounded-t transition-all duration-300 motion-reduce:transition-none ${
                                 isSelected
                                   ? 'bg-brand-cyan shadow-md shadow-cyan-500/30'
                                   : 'bg-slate-800 hover:bg-slate-700'
@@ -1836,7 +1928,7 @@
                             <span className={`text-[9px] font-mono mt-1 ${isSelected ? 'text-brand-cyan font-bold' : 'text-slate-500'}`}>
                               L{l.level}
                             </span>
-                          </div>
+                          </button>
                         );
                       })}
                     </div>
@@ -1849,12 +1941,12 @@
                       <span className="text-brand-cyan font-bold">{currentTotalWorkingLoad} lbs</span>
                     </div>
                   </div>
-                </div>
+                </section>
 
                 {/* STEP 4: Activation Set (RPE 8) */}
-                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
+                <section aria-labelledby="step4-heading" className="bg-brand-surface p-4 rounded-xl border border-slate-700/50 space-y-3">
                   <div className="flex justify-between items-center">
-                    <label className="text-xs font-bold text-brand-muted uppercase tracking-wider">
+                    <label id="step4-heading" htmlFor="activation-reps-input" className="text-xs font-bold text-brand-muted uppercase tracking-wider">
                       Step 4: Activation Set (RPE 8)
                     </label>
                     <span className="text-xs text-brand-muted">Target: 12-15 Reps</span>
@@ -1862,13 +1954,14 @@
 
                   <div className="flex items-center gap-3">
                     <input
+                      id="activation-reps-input"
                       type="number"
                       min="1"
                       max="30"
                       value={activationReps}
                       disabled={activationDone}
                       onChange={(e) => setActivationReps(Math.max(1, Number(e.target.value) || 1))}
-                      className="w-20 bg-brand-base border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-brand-text disabled:opacity-50"
+                      className={`w-20 bg-brand-base border border-slate-700 text-center rounded-lg p-2 font-black text-lg text-brand-text disabled:opacity-50 ${FOCUS_RING}`}
                     />
                     <span className="text-xs text-brand-muted flex-1">Pre-exhausts slow-twitch fibers before mini-sets.</span>
                   </div>
@@ -1877,21 +1970,25 @@
                     <button
                       type="button"
                       onClick={handleStartActivationRest}
-                      className="w-full py-2.5 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-lg transition-all uppercase tracking-wider shadow-md shadow-cyan-950/20"
+                      className={`w-full py-2.5 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-lg transition-all motion-reduce:transition-none uppercase tracking-wider shadow-md shadow-cyan-950/20 ${FOCUS_RING}`}
                     >
                       Complete Activation & Start 5-Breath Rest ➔
                     </button>
                   )}
-                </div>
+                </section>
 
-                {/* Rest Timer */}
+                {/* Rest Timer with aria-live updates and reduced motion respect */}
                 {isResting && (
-                  <div className="bg-brand-surface border-2 border-brand-cyan p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-cyan-950/40">
+                  <section
+                    aria-label="Rest timer"
+                    aria-live="polite"
+                    className="bg-brand-surface border-2 border-brand-cyan p-5 rounded-2xl text-center space-y-3 shadow-lg shadow-cyan-950/40"
+                  >
                     <span className="text-xs font-black uppercase text-brand-cyan tracking-widest block">
                       5-BREATH REST PAUSE
                     </span>
                     <div className="relative flex items-center justify-center my-2 h-20">
-                      <div className="w-20 h-20 rounded-full border-4 border-brand-cyan/30 animate-ping absolute" />
+                      <div className="w-20 h-20 rounded-full border-4 border-brand-cyan/30 animate-ping motion-reduce:animate-none absolute" aria-hidden="true" />
                       <div className="w-16 h-16 rounded-full bg-brand-base border-2 border-brand-cyan flex flex-col items-center justify-center z-10">
                         <span className="text-xl font-mono font-black text-brand-cyan">{restTimer}s</span>
                         <span className="text-[9px] text-brand-muted font-bold uppercase">Breath {currentBreath}/5</span>
@@ -1902,25 +1999,25 @@
                       <button
                         type="button"
                         onClick={handleSkipRest}
-                        className="px-3 py-1 bg-brand-base hover:bg-slate-800 text-brand-text text-xs font-bold rounded border border-slate-700"
+                        className={`px-3 py-1 bg-brand-base hover:bg-slate-800 text-brand-text text-xs font-bold rounded border border-slate-700 ${FOCUS_RING}`}
                       >
                         Skip Rest ➔
                       </button>
                     </div>
-                  </div>
+                  </section>
                 )}
 
                 {/* STEP 5: Cluster Mini-Sets */}
-                <div className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
-                  <h3 className="text-xs font-bold text-brand-muted mb-3 uppercase tracking-wider">
+                <section aria-labelledby="step5-heading" className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
+                  <h2 id="step5-heading" className="text-xs font-bold text-brand-muted mb-3 uppercase tracking-wider">
                     Step 5: Cluster Mini-Sets (3–5 Reps)
-                  </h3>
+                  </h2>
 
-                  <div className="grid grid-cols-5 gap-2 mb-4">
+                  <div className="grid grid-cols-5 gap-2 mb-4" aria-label="Recorded mini-sets">
                     {[0, 1, 2, 3, 4].map((idx) => (
                       <div
                         key={idx}
-                        className={`p-3 rounded-lg border text-center transition-all ${
+                        className={`p-3 rounded-lg border text-center transition-all motion-reduce:transition-none ${
                           miniSets[idx] !== undefined
                             ? miniSets[idx] < 3
                               ? 'bg-rose-950/80 border-rose-700 text-rose-300'
@@ -1942,11 +2039,11 @@
 
                   {activationDone && !isCompleted && !isResting && (
                     <div className="space-y-3 pt-2 border-t border-slate-800">
-                      <label className="block text-xs text-brand-text font-bold mb-2">
+                      <p id="miniset-reps-label" className="block text-xs text-brand-text font-bold mb-2">
                         Select Reps Completed for Mini-Set #{miniSets.length + 1}:
-                      </label>
+                      </p>
 
-                      <div className="space-y-2">
+                      <div role="group" aria-labelledby="miniset-reps-label" className="space-y-2">
                         {[
                           { reps: 5, label: '5 Reps (Target Goal)' },
                           { reps: 4, label: '4 Reps' },
@@ -1956,17 +2053,19 @@
                         ].map(({ reps, label }) => {
                           const isSelected = selectedReps === reps;
                           return (
-                            <div
+                            <button
                               key={reps}
+                              type="button"
+                              aria-pressed={isSelected}
                               onClick={() => handleSelectCard(reps)}
-                              className={`p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors ${
+                              className={`w-full text-left p-3.5 rounded-xl border flex items-center justify-between cursor-pointer transition-colors motion-reduce:transition-none ${FOCUS_RING} ${
                                 isSelected
                                   ? 'bg-brand-base border-brand-cyan text-brand-text ring-1 ring-brand-cyan'
                                   : 'bg-brand-base border-slate-800 hover:border-slate-700 text-brand-muted'
                               }`}
                             >
                               <div className="flex items-center gap-3">
-                                <div
+                                <span
                                   className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-sm ${
                                     isSelected
                                       ? 'bg-brand-cyan text-brand-base'
@@ -1974,7 +2073,7 @@
                                   }`}
                                 >
                                   {reps}
-                                </div>
+                                </span>
                                 <span className="text-xs font-bold">{label}</span>
                               </div>
 
@@ -1983,7 +2082,7 @@
                                   ✓ Selected
                                 </span>
                               )}
-                            </div>
+                            </button>
                           );
                         })}
                       </div>
@@ -1992,7 +2091,7 @@
                         <button
                           type="button"
                           onClick={handleConfirmAndStartRest}
-                          className="w-full py-3 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-xl transition-all uppercase tracking-wider shadow-lg shadow-cyan-950/30 mt-4"
+                          className={`w-full py-3 bg-brand-cyan hover:bg-cyan-400 text-brand-base font-black text-xs rounded-xl transition-all motion-reduce:transition-none uppercase tracking-wider shadow-lg shadow-cyan-950/30 mt-4 ${FOCUS_RING}`}
                         >
                           {selectedReps >= 3
                             ? `Confirm ${selectedReps} Reps & Start 5-Breath Rest ➔`
@@ -2000,29 +2099,33 @@
                         </button>
                       ) : (
                         <p className="text-xs text-brand-muted text-center italic py-1">
-                          Tap a card above to select your completed reps.
+                          Select a rep count above to record your mini-set.
                         </p>
                       )}
                     </div>
                   )}
 
                   {isCompleted && (
-                    <div className="mt-4 bg-brand-base border border-brand-cyan/60 p-4 rounded-lg text-center">
+                    <div
+                      role="status"
+                      aria-live="assertive"
+                      className="mt-4 bg-brand-base border border-brand-cyan/60 p-4 rounded-lg text-center"
+                    >
                       <span className="text-xs font-black text-brand-cyan block mb-1">✓ EXERCISE COMPLETE</span>
                       <p className="text-xs text-brand-muted">Auto-regulation trigger reached. Maximum muscle fiber recruitment achieved.</p>
                       <button
                         type="button"
                         onClick={saveWorkout}
-                        className="mt-3 w-full py-2.5 bg-brand-cyan text-brand-base font-black text-xs rounded-lg hover:bg-cyan-400 transition-colors uppercase tracking-wider"
+                        className={`mt-3 w-full py-2.5 bg-brand-cyan text-brand-base font-black text-xs rounded-lg hover:bg-cyan-400 transition-colors motion-reduce:transition-none uppercase tracking-wider ${FOCUS_RING}`}
                       >
                         SAVE TO HISTORY LOG
                       </button>
                     </div>
                   )}
-                </div>
-              </div>
+                </section>
+              </main>
             ) : (
-              <div className="space-y-3">
+              <main className="space-y-3" aria-label="Workout History">
                 {history.length === 0 ? (
                   <div className="text-center py-12 bg-brand-surface rounded-xl border border-slate-700/50">
                     <p className="text-brand-muted text-sm font-semibold">No saved workouts yet.</p>
@@ -2030,10 +2133,10 @@
                   </div>
                 ) : (
                   history.map((log) => (
-                    <div key={log.id} className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
+                    <article key={log.id} className="bg-brand-surface p-4 rounded-xl border border-slate-700/50">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-bold text-sm text-brand-text">{log.exercise}</h4>
+                          <h3 className="font-bold text-sm text-brand-text">{log.exercise}</h3>
                           <span className="text-xs text-brand-muted">{log.date}</span>
                         </div>
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-brand-base text-brand-cyan border border-slate-800">
@@ -2045,10 +2148,10 @@
                         <span className="text-brand-muted">Mini-Sets: <strong className="text-brand-cyan font-mono">[{log.miniSets.join(', ')}]</strong></span>
                         <span className="text-brand-muted">Total: <strong className="text-brand-text font-mono">{log.totalReps}</strong></span>
                       </div>
-                    </div>
+                    </article>
                   ))
                 )}
-              </div>
+              </main>
             )}
           </div>
         );
